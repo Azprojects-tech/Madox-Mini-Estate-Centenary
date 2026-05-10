@@ -1,0 +1,98 @@
+{
+  "template_version": "1.0",
+  "created": "2025-09-07",
+  "placeholders": {
+    "ESTATE_NAME": {
+      "description": "Name of the estate development",
+      "example": "Greenfield Gardens Estate",
+      "required": true
+    },
+    "CLIENT_NAME": {
+      "description": "Estate owner/developer contact person",
+      "example": "John Doe",
+      "required": true
+    },
+    "CLIENT_EMAIL": {
+      "description": "Estate owner contact email",
+      "example": "john@greenfield-estates.com",
+      "required": true
+    },
+    "CLIENT_PHONE": {
+      "description": "Estate owner contact phone number",
+      "example": "+234 803 567 8901",
+      "required": true
+    },
+    "ESTATE_LOCATION": {
+      "description": "Geographic location of the estate",
+      "example": "Lekki, Lagos",
+      "required": true
+    },
+    "SHEET_ID": {
+      "description": "Google Sheets ID for estate database",
+      "example": "1S5DaLtj6ZrZXKfGAuZh2VKjKKDAlHouNYzxn6Sj7UFM",
+      "required": true,
+      "auto_generate": true
+    },
+    "GEOJSON_FILE": {
+      "description": "Name of the GeoJSON file containing parcel data",
+      "example": "estate-parcels.geojson",
+      "required": true
+    }
+  },
+  "features": [
+    "Interactive estate mapping",
+    "8-card financial dashboard",
+    "Google Sheets integration",
+    "Mobile-responsive design",
+    "Real-time parcel status tracking",
+    "Client contact integration",
+    "Admin management panel",
+    "Professional UI/UX"
+  ],
+  "technical_requirements": {
+    "geojson_format": {
+      "required_properties": ["PARCEL_ID", "status"],
+      "optional_properties": ["price", "size", "buyer", "notes"],
+      "coordinate_system": "WGS84 (EPSG:4326)"
+    },
+    "google_sheets_structure": {
+      "columns": [
+        "Parcel ID",
+        "Status",
+        "Price",
+        "Size",
+        "Buyer",
+        "Contact",
+        "Notes",
+        "Date Updated",
+        "Agent"
+      ],
+      "required_permissions": "View and Edit"
+    }
+  },
+  "customization_options": {
+    "branding": {
+      "estate_name": "Dynamic",
+      "contact_information": "Dynamic",
+      "colors": "Default (can be customized)",
+      "logo": "Optional upload"
+    },
+    "functionality": {
+      "dashboard_cards": "Standard 8-card layout",
+      "map_controls": "Standard (Numbers, Land, Admin)",
+      "status_system": "Available/Sold/Reserved/Special"
+    }
+  },
+  "deployment": {
+    "hosting": "Netlify (recommended)",
+    "domain": "Custom subdomain available",
+    "ssl": "Automatic HTTPS",
+    "cdn": "Global content delivery"
+  },
+  "support": {
+    "documentation": "Complete client guides included",
+    "technical_support": "AZ PropTech Solutions",
+    "updates": "Automatic with template system",
+    "maintenance": "Included in service package"
+  }
+}

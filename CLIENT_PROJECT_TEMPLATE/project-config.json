@@ -1,0 +1,56 @@
+{
+  "project": {
+    "name": "{{ESTATE_NAME}} PVP Portal",
+    "client": "{{CLIENT_NAME}}",
+    "email": "{{CLIENT_EMAIL}}",
+    "phone": "{{CLIENT_PHONE}}",
+    "location": "{{ESTATE_LOCATION}}",
+    "created": "{{CREATION_DATE}}",
+    "version": "1.0"
+  },
+  "files": {
+    "portal": "{{estate-name}}-portal.html",
+    "parcels_geojson": "{{estate-name}}-parcels.geojson", 
+    "landmarks_geojson": "{{estate-name}}-landmarks.geojson",
+    "database": "{{estate-name}}-database.csv",
+    "deployment": "{{estate-name}}-deploy.zip"
+  },
+  "google_sheets": {
+    "sheet_id": "{{SHEET_ID}}",
+    "sheet_url": "https://docs.google.com/spreadsheets/d/{{SHEET_ID}}/edit",
+    "api_access": "enabled",
+    "permissions": "client_full_access"
+  },
+  "deployment": {
+    "hosting": "Netlify",
+    "url": "https://{{estate-slug}}.netlify.app/",
+    "custom_domain": "Available",
+    "ssl": "Automatic HTTPS"
+  },
+  "features": [
+    "Interactive parcel mapping",
+    "8-card financial dashboard", 
+    "Google Sheets integration",
+    "Mobile-responsive design",
+    "Real-time status updates",
+    "Admin management panel",
+    "Client contact integration",
+    "Landmark visualization"
+  ],
+  "geojson_requirements": {
+    "parcels": {
+      "required_properties": ["PARCEL_ID", "PARCEL_AREA"],
+      "optional_properties": ["STATUS", "PRICE", "SIZE_UNIT"]
+    },
+    "landmarks": {
+      "required_properties": ["NAME", "TYPE"],
+      "optional_properties": ["DESCRIPTION", "STATUS"]
+    }
+  },
+  "support": {
+    "provider": "AZ PropTech Solutions",
+    "documentation": "Complete guides included",
+    "technical_support": "Email and phone support",
+    "updates": "Automatic with template system"
+  }
+}

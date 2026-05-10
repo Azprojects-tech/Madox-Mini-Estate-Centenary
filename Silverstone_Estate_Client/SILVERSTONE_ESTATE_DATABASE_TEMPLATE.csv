@@ -1,0 +1,11 @@
+Parcel ID,Status,Price,Size,Buyer Name,Contact,Notes,Date Created,Last Updated
+P001,Available,15000000,500 sqm,,,,"September 14, 2025","September 14, 2025"
+P002,Available,18000000,600 sqm,,,,"September 14, 2025","September 14, 2025"
+P003,Sold,12000000,400 sqm,John Okafor,+234 803 123 4567,First buyer,"September 14, 2025","September 14, 2025"
+P004,Reserved,20000000,700 sqm,Mary Eze,+234 810 987 6543,50% deposit paid,"September 14, 2025","September 14, 2025"
+P005,Available,16000000,550 sqm,,,,"September 14, 2025","September 14, 2025"
+P006,Available,14000000,450 sqm,,,,"September 14, 2025","September 14, 2025"
+P007,Sold,22000000,800 sqm,David Nnamdi,+234 802 555 1234,Full payment received,"September 14, 2025","September 14, 2025"
+P008,Available,17000000,580 sqm,,,,"September 14, 2025","September 14, 2025"
+P009,Reserved,19000000,650 sqm,Grace Emeka,+234 805 777 8888,30% deposit paid,"September 14, 2025","September 14, 2025"
+P010,Available,13000000,420 sqm,,,,"September 14, 2025","September 14, 2025"

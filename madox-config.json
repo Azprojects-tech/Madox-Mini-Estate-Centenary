@@ -1,0 +1,32 @@
+{
+  "site_config": {
+    "SITE_TITLE": "MADOX MINI ESTATE",
+    "PRICE_DISPLAY": "₦15,000,000",
+    "DEFAULT_LAT": 0,
+    "DEFAULT_LNG": 0,
+    "DEFAULT_ZOOM": 18,
+    "BRAND_PRIMARY_COLOR": "#1e40af",
+    "BRAND_SECONDARY_COLOR": "#1e3a8a", 
+    "AVAILABLE_COLOR": "#28a745",
+    "SOLD_COLOR": "#dc3545",
+    "RESERVED_COLOR": "#ffc107",
+    "PARCEL_ID_FIELD": "parcel_id",
+    "PARCEL_STATUS_FIELD": "status",
+    "PARCEL_PRICE_FIELD": "price"
+  },
+  "contact_info": {
+    "company_name": "A&Z Projects Ltd",
+    "phone_primary": "+2348039921371",
+    "phone_nigeria": "+2348039921371", 
+    "email": "ifeanyiali@gmail.com",
+    "whatsapp": "+2348039921371"
+  },
+  "data_files": {
+    "subdivision_geojson": "Parcels.geojson",
+    "context_geojson": "context.geojson"
+  },
+  "output": {
+    "filename": "madox-mini-estate.html",
+    "title": "Madox Mini Estate Interactive Map"
+  }
+}

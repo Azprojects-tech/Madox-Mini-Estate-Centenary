@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parcel Vision Pro - Estate Management Portal</title>
+    
+    <!-- EMBED-SAFE STYLING - No External Dependencies -->
+    <style>
+        /* System fonts only - no external font loading */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Arial', sans-serif;
+        }
+
+        /* CORS-safe color variables */
+        :root {
+            --primary-color: #8B5CF6;
+            --secondary-color: #A855F7;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+            --info-color: #17a2b8;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+        }
+
+        body {
+            background: #f8f9fa;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* Embed mode optimizations */
+        .embed-mode {
+            padding: 0;
+            margin: 0;
+        }
+
+        .embed-mode .az-watermark {
+            display: none !important;
+        }
+
+        .embed-mode .header {
+            padding: 8px 15px;
+            font-size: 14px;
+        }
+
+        .embed-mode .header h1 {
+            font-size: 18px;
+        }
+
+        /* Header styling */
+        .header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            padding: 15px 20px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: relative;
+            z-index: 1000;
+        }
+
+        .header h1 {
+            font-size: 22px;
+            font-weight: 700;
+            margin: 0;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+        }
+
+        /* Map container */
+        #map {
+            height: calc(100vh - 80px);
+            width: 100%;
+            position: relative;
+            z-index: 1;
+        }
+
+        .embed-mode #map {
+            height: calc(100vh - 60px);
+        }
+
+        /* Loading screen */
+        .loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            z-index: 9999;
+            font-size: 16px;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255,255,255,0.3);
+            border-top: 4px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Legend styling */
+        .legend {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 8px 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+            z-index: 1000;
+            font-size: 11px;
+            min-width: 80px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+        }
+
+        .legend h4 {
+            font-size: 12px;
+            margin-bottom: 6px;
+            color: var(--dark-color);
+            font-weight: 600;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 4px;
+            font-size: 10px;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 8px;
+            margin-right: 6px;
+            border-radius: 2px;
+        }
+
+        /* Admin toggle button */
+        .admin-toggle {
+            position: absolute;
+            top: 120px;
+            right: 10px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 10px;
+            z-index: 1000;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+            transition: all 0.3s ease;
+        }
+
+        .admin-toggle:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .header {
+                padding: 10px 15px;
+            }
+            
+            .header h1 {
+                font-size: 16px;
+            }
+            
+            #map {
+                height: calc(100vh - 60px);
+            }
+            
+            .legend {
+                top: 8px;
+                right: 8px;
+                font-size: 10px;
+                padding: 6px 8px;
+            }
+            
+            .admin-toggle {
+                top: 100px;
+                right: 8px;
+                padding: 5px 10px;
+                font-size: 9px;
+            }
+        }
+
+        /* Popup styling */
+        .leaflet-popup-content-wrapper {
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+
+        .leaflet-popup-content {
+            margin: 12px 16px;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+
+        /* Status badges */
+        .status-badge {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-available { 
+            background: #d4edda; 
+            color: #155724; 
+        }
+        
+        .status-reserved { 
+            background: #fff3cd; 
+            color: #856404; 
+        }
+        
+        .status-sold { 
+            background: #f8d7da; 
+            color: #721c24; 
+        }
+
+        /* Database panel styling */
+        .database-panel {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 10000;
+            display: none;
+            backdrop-filter: blur(5px);
+        }
+
+        .database-content {
+            background: white;
+            margin: 20px;
+            border-radius: 12px;
+            max-height: calc(100vh - 40px);
+            overflow-y: auto;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .database-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 15px 20px;
+            border-radius: 12px 12px 0 0;
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+
+        .database-header h3 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .database-body {
+            padding: 20px;
+        }
+
+        /* Summary cards */
+        .database-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .summary-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            border-left: 4px solid var(--primary-color);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .summary-card h4 {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .summary-card .value {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--dark-color);
+            margin-bottom: 3px;
+        }
+
+        .summary-card small {
+            font-size: 10px;
+            color: #888;
+        }
+
+        /* EMBED COMMUNICATION SETUP */
+        .embed-ready {
+            opacity: 1;
+        }
+    </style>
+
+    <!-- Leaflet CSS (CDN with fallback) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" 
+          integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" 
+          crossorigin=""
+          onerror="this.onerror=null; this.href='/assets/leaflet-fallback.css';">
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loading" id="loading">
+        <div class="spinner"></div>
+        <p>Loading estate management portal...</p>
+        <small style="margin-top: 10px; opacity: 0.8;">Connecting to database...</small>
+    </div>
+
+    <!-- Header -->
+    <div class="header">
+        <h1 id="estateTitle">MADOX MINI ESTATE</h1>
+    </div>
+
+    <!-- Map Container -->
+    <div id="map"></div>
+
+    <!-- Legend -->
+    <div class="legend">
+        <h4>Parcel Status</h4>
+        <div class="legend-item">
+            <div class="legend-color" style="background-color: #28a745;"></div>
+            <span>Available</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background-color: #ffc107;"></div>
+            <span>Reserved</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background-color: #dc3545;"></div>
+            <span>Sold</span>
+        </div>
+        
+        <!-- Admin Toggle -->
+        <button class="admin-toggle" onclick="toggleAdminView()" id="adminToggle">👤 Admin</button>
+    </div>
+
+    <!-- Database Panel -->
+    <div class="database-panel" id="databasePanel">
+        <div class="database-content">
+            <div class="database-header">
+                <h3>🗃️ ESTATE DATABASE - ADMIN VIEW</h3>
+                <button onclick="closeDatabasePanel()" 
+                        style="background: rgba(255,255,255,0.2); color: white; border: none; 
+                               padding: 5px 10px; border-radius: 3px; cursor: pointer; float: right;">
+                    ✕ Close
+                </button>
+            </div>
+            <div class="database-body" id="databaseBody">
+                <div style="text-align: center; padding: 40px; color: #666;">
+                    <div class="spinner" style="width: 30px; height: 30px; margin: 0 auto 15px;"></div>
+                    <p>Loading database information...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CORS-Safe JavaScript -->
+    <script>
+        // Embed detection and configuration
+        const EMBED_CONFIG = {
+            isEmbedded: window.location !== window.parent.location || 
+                       new URLSearchParams(window.location.search).get('embed') === 'true',
+            clientName: new URLSearchParams(window.location.search).get('client') || 'Client',
+            parentOrigin: document.referrer ? new URL(document.referrer).origin : '*'
+        };
+
+        // Apply embed mode if detected
+        if (EMBED_CONFIG.isEmbedded) {
+            document.body.classList.add('embed-mode');
+            console.log('🎯 Running in embed mode for client:', EMBED_CONFIG.clientName);
+            
+            // Notify parent window that embed is ready
+            setTimeout(() => {
+                parent.postMessage({
+                    type: 'PARCEL_VISION_READY',
+                    source: 'parcel-vision-pro',
+                    client: EMBED_CONFIG.clientName
+                }, EMBED_CONFIG.parentOrigin);
+            }, 1000);
+        }
+
+        // CORS-safe Google Sheets configuration
+        const GOOGLE_SHEETS_CONFIG = {
+            spreadsheetId: '1S5DaLtj6ZrZXKfGAuZh2VKjKKDAlHouNYzxn6Sj7UFM',
+            sheetName: 'MASTER_TEMPLATE_DATA',
+            apiKey: 'AIzaSyCkLewazfYqcQ_llw_Adj_mTNK71T2iRL0',
+            sheetUrl: 'https://docs.google.com/spreadsheets/d/1S5DaLtj6ZrZXKfGAuZh2VKjKKDAlHouNYzxn6Sj7UFM/edit'
+        };
+
+        // Global variables
+        let map;
+        let parcelLayer;
+        let parcelDatabase = {};
+        let currentView = 'customer';
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Parcel Vision Pro initializing...');
+            
+            // Set estate title based on client
+            if (EMBED_CONFIG.clientName && EMBED_CONFIG.clientName !== 'Client') {
+                document.getElementById('estateTitle').textContent = 
+                    EMBED_CONFIG.clientName.toUpperCase() + ' ESTATE PORTAL';
+            }
+
+            initializeMap();
+            loadParcelData();
+        });
+
+        // Initialize Leaflet map
+        function initializeMap() {
+            try {
+                // Create map with CORS-safe tile layer
+                map = L.map('map', {
+                    center: [6.4474, 7.4892], // Default Nigeria coordinates
+                    zoom: 17,
+                    zoomControl: true,
+                    scrollWheelZoom: true,
+                    doubleClickZoom: true,
+                    boxZoom: true,
+                    keyboard: true,
+                    dragging: true,
+                    touchZoom: true
+                });
+
+                // Use CORS-friendly tile layer
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '© OpenStreetMap contributors',
+                    maxZoom: 19,
+                    crossOrigin: 'anonymous'
+                }).addTo(map);
+
+                console.log('✅ Map initialized successfully');
+
+                // Load GeoJSON data
+                loadGeoJSONData();
+
+            } catch (error) {
+                console.error('❌ Map initialization error:', error);
+                showError('Map initialization failed. Please refresh the page.');
+            }
+        }
+
+        // Load GeoJSON data with CORS handling
+        async function loadGeoJSONData() {
+            try {
+                // Use relative path or same-origin URL to avoid CORS
+                const response = await fetch('./Parcels.geojson');
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const geoData = await response.json();
+                console.log('✅ GeoJSON data loaded:', geoData.features.length, 'parcels');
+
+                // Create parcel layer
+                parcelLayer = L.geoJSON(geoData, {
+                    style: function(feature) {
+                        const parcelId = feature.properties.parcelId || feature.properties.id;
+                        return getParcelStyle(parcelId);
+                    },
+                    onEachFeature: function(feature, layer) {
+                        const parcelId = feature.properties.parcelId || feature.properties.id;
+                        
+                        // Add click event
+                        layer.on('click', function() {
+                            showParcelPopup(parcelId, layer);
+                        });
+
+                        // Add hover effects
+                        layer.on('mouseover', function() {
+                            layer.setStyle({ weight: 3, color: '#ffffff' });
+                        });
+
+                        layer.on('mouseout', function() {
+                            layer.setStyle(getParcelStyle(parcelId));
+                        });
+                    }
+                }).addTo(map);
+
+                // Fit map to parcels
+                map.fitBounds(parcelLayer.getBounds(), { padding: [10, 10] });
+
+                // Hide loading screen
+                setTimeout(() => {
+                    document.getElementById('loading').style.display = 'none';
+                    document.body.classList.add('embed-ready');
+                }, 1500);
+
+            } catch (error) {
+                console.error('❌ GeoJSON loading error:', error);
+                showError('Unable to load parcel data. Please check your connection and try again.');
+            }
+        }
+
+        // Load parcel data from Google Sheets with CORS handling
+        async function loadParcelData() {
+            try {
+                const url = `https://sheets.googleapis.com/v4/spreadsheets/${GOOGLE_SHEETS_CONFIG.spreadsheetId}/values/${GOOGLE_SHEETS_CONFIG.sheetName}?key=${GOOGLE_SHEETS_CONFIG.apiKey}`;
+                
+                const response = await fetch(url);
+                
+                if (!response.ok) {
+                    throw new Error(`Sheets API error: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                console.log('✅ Parcel database loaded:', data.values?.length || 0, 'records');
+
+                // Process the data
+                if (data.values && data.values.length > 1) {
+                    const headers = data.values[0];
+                    const rows = data.values.slice(1);
+
+                    rows.forEach(row => {
+                        if (row[0]) { // ParcelID exists
+                            parcelDatabase[row[0]] = {
+                                status: row[1] || 'available',
+                                purchaserName: row[2] || '',
+                                phoneNumber: row[3] || '',
+                                emailAddress: row[4] || '',
+                                purchaseId: row[5] || '',
+                                displayPreference: row[6] || 'name',
+                                areaSqM: row[7] || '500',
+                                priceNaira: row[8] || '12000000',
+                                saleDate: row[9] || '',
+                                serviceFee: row[10] || '0',
+                                paymentStatus: row[11] || 'pending'
+                            };
+                        }
+                    });
+
+                    // Update map colors
+                    updateMapColors();
+                }
+
+            } catch (error) {
+                console.error('❌ Database loading error:', error);
+                // Continue with default data
+            }
+        }
+
+        // Get parcel style based on status
+        function getParcelStyle(parcelId) {
+            const parcel = parcelDatabase[parcelId] || { status: 'available' };
+            let color = '#28a745'; // Default green for available
+
+            switch (parcel.status.toLowerCase()) {
+                case 'sold':
+                    color = '#dc3545'; // Red
+                    break;
+                case 'reserved':
+                    color = '#ffc107'; // Yellow
+                    break;
+                case 'available':
+                default:
+                    color = '#28a745'; // Green
+                    break;
+            }
+
+            return {
+                fillColor: color,
+                weight: 2,
+                opacity: 1,
+                color: '#ffffff',
+                fillOpacity: 0.7
+            };
+        }
+
+        // Update map colors
+        function updateMapColors() {
+            if (parcelLayer) {
+                parcelLayer.eachLayer(function(layer) {
+                    const parcelId = layer.feature.properties.parcelId || 
+                                   layer.feature.properties.id;
+                    layer.setStyle(getParcelStyle(parcelId));
+                });
+            }
+        }
+
+        // Show parcel popup
+        function showParcelPopup(parcelId, layer) {
+            const parcel = parcelDatabase[parcelId] || {};
+            const coords = layer.getLatLng();
+            
+            const price = parseInt(parcel.priceNaira || 12000000);
+            const formattedPrice = price.toLocaleString();
+            
+            let ownerInfo = 'Available for purchase';
+            if (parcel.status === 'sold' && parcel.purchaserName) {
+                ownerInfo = `Owner: ${parcel.purchaserName}`;
+            } else if (parcel.status === 'reserved' && parcel.purchaserName) {
+                ownerInfo = `Reserved by: ${parcel.purchaserName}`;
+            }
+
+            const popupContent = `
+                <div style="font-family: inherit; max-width: 250px;">
+                    <h3 style="margin: 0 0 8px 0; color: #333; font-size: 16px;">
+                        🏠 Parcel ${parcelId}
+                    </h3>
+                    <div style="margin-bottom: 6px;">
+                        <span class="status-badge status-${parcel.status || 'available'}">
+                            ${(parcel.status || 'available').toUpperCase()}
+                        </span>
+                    </div>
+                    <p style="margin: 4px 0; font-size: 13px;">
+                        <strong>💰 Price:</strong> ₦${formattedPrice}
+                    </p>
+                    <p style="margin: 4px 0; font-size: 13px;">
+                        <strong>📐 Area:</strong> ${parcel.areaSqM || '500'} sqm
+                    </p>
+                    <p style="margin: 4px 0; font-size: 13px;">
+                        <strong>👤 Status:</strong> ${ownerInfo}
+                    </p>
+                    <p style="margin: 4px 0 0 0; font-size: 11px; color: #666;">
+                        📍 ${coords.lat.toFixed(4)}, ${coords.lng.toFixed(4)}
+                    </p>
+                </div>
+            `;
+
+            L.popup()
+                .setLatLng(coords)
+                .setContent(popupContent)
+                .openOn(map);
+
+            // Notify parent window of parcel selection
+            if (EMBED_CONFIG.isEmbedded) {
+                parent.postMessage({
+                    type: 'PARCEL_SELECTED',
+                    source: 'parcel-vision-pro',
+                    parcelId: parcelId,
+                    data: parcel
+                }, EMBED_CONFIG.parentOrigin);
+            }
+        }
+
+        // Toggle admin view
+        function toggleAdminView() {
+            if (currentView === 'customer') {
+                // Show admin login or directly show admin features
+                showAdminDashboard();
+                currentView = 'admin';
+                document.getElementById('adminToggle').textContent = '👥 Customer';
+            } else {
+                // Switch back to customer view
+                closeDatabasePanel();
+                currentView = 'customer';
+                document.getElementById('adminToggle').textContent = '👤 Admin';
+            }
+        }
+
+        // Show admin dashboard
+        function showAdminDashboard() {
+            const panel = document.getElementById('databasePanel');
+            const body = document.getElementById('databaseBody');
+            
+            // Calculate statistics
+            const allParcels = Object.keys(parcelDatabase);
+            const soldParcels = allParcels.filter(id => 
+                parcelDatabase[id].status === 'sold'
+            );
+            const reservedParcels = allParcels.filter(id => 
+                parcelDatabase[id].status === 'reserved'
+            );
+            
+            const totalRevenue = soldParcels.reduce((sum, id) => {
+                let price = parseFloat(parcelDatabase[id].priceNaira) || 12000000;
+                if (price < 1000) price = price * 1000000;
+                return sum + price;
+            }, 0);
+
+            const revenueExpected = reservedParcels.reduce((sum, id) => {
+                let price = parseFloat(parcelDatabase[id].priceNaira) || 12000000;
+                if (price < 1000) price = price * 1000000;
+                return sum + price;
+            }, 0);
+
+            const avgPrice = soldParcels.length > 0 ? 
+                Math.round(totalRevenue / soldParcels.length) : 12000000;
+
+            const occupancyRate = Math.round(
+                ((soldParcels.length + reservedParcels.length) / 50) * 100
+            );
+
+            body.innerHTML = `
+                <div class="database-summary">
+                    <div class="summary-card">
+                        <h4>💰 Total Revenue</h4>
+                        <div class="value">₦${totalRevenue.toLocaleString()}</div>
+                    </div>
+                    <div class="summary-card">
+                        <h4>🏠 Total Parcels</h4>
+                        <div class="value">50</div>
+                    </div>
+                    <div class="summary-card">
+                        <h4>✅ Sold</h4>
+                        <div class="value">${soldParcels.length}</div>
+                    </div>
+                    <div class="summary-card">
+                        <h4>⏳ Reserved</h4>
+                        <div class="value">${reservedParcels.length}</div>
+                    </div>
+                    <div class="summary-card">
+                        <h4>🟢 Available</h4>
+                        <div class="value">${50 - soldParcels.length - reservedParcels.length}</div>
+                    </div>
+                    <div class="summary-card">
+                        <h4>💵 Expected</h4>
+                        <div class="value">₦${revenueExpected.toLocaleString()}</div>
+                    </div>
+                    <div class="summary-card" style="background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);">
+                        <h4 style="color: #0c5460;">🎯 Occupancy</h4>
+                        <div class="value" style="color: #0c5460;">${occupancyRate}%</div>
+                        <small style="color: #0c5460; font-size: 10px;">${soldParcels.length + reservedParcels.length} of 50</small>
+                    </div>
+                    <div class="summary-card" style="background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);">
+                        <h4 style="color: #721c24;">📊 Avg Price</h4>
+                        <div class="value" style="color: #721c24;">₦${avgPrice.toLocaleString()}</div>
+                        <small style="color: #721c24; font-size: 10px;">Per sold parcel</small>
+                    </div>
+                </div>
+                
+                <h4>📞 BUYER CONTACTS & PROPERTY DETAILS</h4>
+                <div style="margin-top: 15px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                    <p style="color: #666; text-align: center; margin: 0;">
+                        Contact management and detailed analytics available in full admin portal.
+                    </p>
+                    <div style="text-align: center; margin-top: 10px;">
+                        <button onclick="window.open('${GOOGLE_SHEETS_CONFIG.sheetUrl}', '_blank')" 
+                                style="background: #28a745; color: white; border: none; padding: 8px 16px; 
+                                       border-radius: 5px; cursor: pointer; font-size: 12px;">
+                            📊 Open Google Sheets
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            panel.style.display = 'block';
+        }
+
+        // Close database panel
+        function closeDatabasePanel() {
+            document.getElementById('databasePanel').style.display = 'none';
+        }
+
+        // Show error message
+        function showError(message) {
+            const loading = document.getElementById('loading');
+            loading.innerHTML = `
+                <div style="text-align: center; color: white;">
+                    <h3>⚠️ Connection Error</h3>
+                    <p style="margin: 15px 0;">${message}</p>
+                    <button onclick="location.reload()" 
+                            style="background: rgba(255,255,255,0.2); color: white; border: none; 
+                                   padding: 10px 20px; border-radius: 5px; cursor: pointer;">
+                        🔄 Retry
+                    </button>
+                </div>
+            `;
+        }
+
+        // Handle page visibility changes (for embedded use)
+        document.addEventListener('visibilitychange', function() {
+            if (EMBED_CONFIG.isEmbedded && !document.hidden) {
+                // Refresh data when tab becomes visible
+                setTimeout(loadParcelData, 1000);
+            }
+        });
+
+        // Error boundary
+        window.addEventListener('error', function(e) {
+            console.error('❌ Application error:', e.error);
+            if (document.getElementById('loading').style.display !== 'none') {
+                showError('Application failed to load. Please refresh the page.');
+            }
+        });
+
+    </script>
+
+    <!-- Leaflet JavaScript (with fallback) -->
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" 
+            integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" 
+            crossorigin=""
+            onerror="console.error('Leaflet failed to load from CDN');">
+    </script>
+</body>
+</html>

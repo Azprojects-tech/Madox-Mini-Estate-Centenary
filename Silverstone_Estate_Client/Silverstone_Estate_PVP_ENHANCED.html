@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style>
+    .az-watermark {
+        position: fixed;
+        top: 140px;
+        right: 15px;
+        background: rgba(255, 255, 255, 0.85);
+        padding: 6px 10px;
+        border-radius: 6px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        z-index: 1200;
+        font-family: Arial, sans-serif;
+        font-size: 11px;
+        color: #666;
+        border: 1px solid rgba(44, 95, 63, 0.3);
+        max-width: 200px;
+        opacity: 0.9;
+    }
+    
+    .az-logo {
+        width: 40px;
+        height: auto;
+        margin-right: 8px;
+        vertical-align: middle;
+    }
+    
+    .az-contact {
+        font-weight: bold;
+        color: #2c5f3f;
+        text-decoration: none;
+    }
+    
+    .az-footer {
+        position: fixed;
+        bottom: 15px;
+        left: 15px;
+        right: 15px;
+        background: rgba(44, 95, 63, 0.8);
+        color: white;
+        padding: 4px 8px;
+        font-family: Arial, sans-serif;
+        font-size: 9px;
+        border-radius: 3px;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+        z-index: 1100;
+        opacity: 0.85;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        height: 20px;
+    }
+    
+    .az-footer a {
+        color: #ffffff;
+        text-decoration: none;
+        font-weight: bold;
+    }
+    
+    .az-footer a:hover {
+        text-decoration: underline;
+    }
+    
+    /* Client Authentication & View Switching - Now in Legend */
+    .admin-toggle {
+        position: relative;
+        margin: 8px 0 0 0;
+        width: 100%;
+        background: rgba(255, 255, 255, 0.85);
+        color: #667eea;
+        border: 1px solid rgba(102, 126, 234, 0.3);
+        padding: 8px 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 10px;
+        font-weight: 600;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+        backdrop-filter: blur(5px);
+        opacity: 0.8;
+        text-align: center;
+    }
+    
+    .admin-toggle:hover {
+        opacity: 1;
+        background: rgba(255, 255, 255, 0.95);
+        transform: translateY(-1px);
+    }
+    
+    .client-view .admin-toggle {
+        background: rgba(102, 126, 234, 0.9);
+        color: white;
+        opacity: 0.9;
+    }
+    
+    /* Attribution Toggle - Moved to Admin Panel Line */
+    .attribution-toggle {
+        background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+        color: white;
+        border: none;
+        padding: 6px 12px;
+        border-radius: 20px;
+        cursor: pointer;
+        font-size: 11px;
+        font-weight: 600;
+        margin-left: 8px;
+    }
+    
+    .attribution-toggle:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+    }
+    
+    /* Hide Leaflet attribution by default */
+    .leaflet-control-attribution {
+        display: none !important;
+    }
+    
+    .show-attribution .leaflet-control-attribution {
+        display: block !important;
+        position: fixed !important;
+        bottom: 180px !important;
+        right: 10px !important;
+        font-size: 8px !important;
+        max-width: 200px !important;
+        background: rgba(255, 255, 255, 0.9) !important;
+        padding: 4px 6px !important;
+        border-radius: 4px !important;
+        z-index: 1100 !important;
+        line-height: 1.2 !important;
+    }
+    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google" content="notranslate">
+    <meta name="robots" content="noindex, nofollow">
+    <title>SILVERSTONE ESTATE OGBEKE NIKE - Parcel Vision Pro</title>
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" 
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" 
+          crossorigin=""/>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 15px 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            position: relative;
+            z-index: 1000;
+        }
+        
+        .header h1 {
+            color: #2c3e50;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .header p {
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+        
+        .controls {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 15px 20px;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            position: fixed;
+            bottom: 45px;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .control-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 11px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        }
+        
+        .btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        select {
+            padding: 6px 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 18px;
+            background: white;
+            font-size: 11px;
+            min-width: 100px;
+        }
+        
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        #map {
+            height: calc(100vh - 160px);
+            width: 100%;
+        }
+        
+        /* Legend Styles */
+        .leaflet-control-legend {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            backdrop-filter: blur(10px);
+            padding: 15px;
+            font-size: 12px;
+            line-height: 1.4;
+            max-width: 250px;
+        }
+        
+        .legend-title {
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 12px;
+            font-size: 13px;
+            text-align: center;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 8px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            padding: 4px 0;
+        }
+        
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 3px;
+            margin-right: 8px;
+            border: 1px solid rgba(0,0,0,0.2);
+        }
+        
+        .legend-text {
+            color: #34495e;
+            font-weight: 500;
+        }
+        
+        /* Enhanced Popup Styles */
+        .popup-content {
+            min-width: 200px;
+        }
+        
+        .popup-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 8px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 4px;
+        }
+        
+        .popup-info {
+            margin-bottom: 4px;
+            color: #34495e;
+            font-size: 13px;
+        }
+        
+        .popup-status {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 6px;
+            display: inline-block;
+        }
+        
+        .status-available {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+        }
+        
+        .status-reserved {
+            background: linear-gradient(135deg, #ffc107, #fd7e14);
+            color: white;
+        }
+        
+        .status-sold {
+            background: linear-gradient(135deg, #dc3545, #c82333);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- Main Header -->
+    <div class="header">
+        <h1>🏘️ SILVERSTONE ESTATE OGBEKE NIKE - Parcel Vision Pro</h1>
+        <p>📱 Jeff Realty: +2348147042804 | 🏆 Premium Real Estate Management System</p>
+    </div>
+
+    <!-- Map Container -->
+    <div id="map"></div>
+
+    <!-- Controls Panel -->
+    <div class="controls">
+        <div class="control-group">
+            <button class="btn active" onclick="showAllParcels()">All Parcels</button>
+            <button class="btn" onclick="filterParcels('available')">Available</button>
+            <button class="btn" onclick="filterParcels('reserved')">Reserved</button>
+            <button class="btn" onclick="filterParcels('sold')">Sold</button>
+        </div>
+        
+        <div class="control-group">
+            <select id="viewSelector" onchange="changeView()">
+                <option value="street">Street View</option>
+                <option value="satellite">Satellite View</option>
+            </select>
+        </div>
+        
+        <div class="control-group">
+            <button class="btn" onclick="resetView()">Reset View</button>
+            <button class="btn" onclick="toggleFullscreen()">Fullscreen</button>
+        </div>
+    </div>
+
+    <!-- AZ PropTech Watermark -->
+    <div class="az-watermark">
+        🏡 <strong>Silverstone Estate Ogbeke Nike</strong><br>
+        📞 <a href="tel:+2348147042804" class="az-contact">+2348147042804</a><br>
+        Jeff Realty
+    </div>
+
+    <!-- AZ PropTech Footer -->
+    <div class="az-footer">
+        PVP by <a href="mailto:azprojects.tech@gmail.com">AZ PropTech Solutions</a> | Advanced Real Estate Management System | Contact: <a href="tel:+2348159921371">+2348159921371</a> | <a href="mailto:azprojects.tech@gmail.com">azprojects.tech@gmail.com</a>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+            crossorigin=""></script>
+
+    <script>
+        // Silverstone Estate Parcel Data
+        const silverstoneData = {
+            "type": "FeatureCollection",
+            "name": "Silverstone_Estate_Parcels",
+            "features": [
+                { "type": "Feature", "properties": { "Text": "P103", "area": 449.80, "price": "₦15,000,000", "status": "available" }, "geometry": { "type": "MultiPolygon", "coordinates": [ [ [ [ 7.531562261867109, 6.596002365838707, 0.0 ], [ 7.531531075651292, 6.595894872169998, 0.0 ], [ 7.531269001688623, 6.595951107297889, 0.0 ], [ 7.531301998631069, 6.596064842458465, 0.0 ], [ 7.531326845071716, 6.596080828439489, 0.0 ], [ 7.531543531299119, 6.59603523694568, 0.0 ], [ 7.531562261867109, 6.596002365838707, 0.0 ] ] ] ] } },
+                { "type": "Feature", "properties": { "Text": "P103B", "area": 450.54, "price": "₦15,000,000", "status": "available" }, "geometry": { "type": "MultiPolygon", "coordinates": [ [ [ [ 7.531531075651249, 6.595894872170006, 0.0 ], [ 7.531492677689601, 6.595762520779252, 0.0 ], [ 7.531230603800005, 6.595818755901708, 0.0 ], [ 7.531269001688621, 6.595951107297889, 0.0 ], [ 7.531531075651249, 6.595894872170006, 0.0 ] ] ] ] } },
+                { "type": "Feature", "properties": { "Text": "P118", "area": 448.78, "price": "₦15,000,000", "status": "reserved" }, "geometry": { "type": "MultiPolygon", "coordinates": [ [ [ [ 7.531454278998652, 6.595630166829905, 0.0 ], [ 7.53141618090954, 6.595498848961174, 0.0 ], [ 7.531153808062537, 6.595554053111969, 0.0 ], [ 7.531192205924641, 6.595686404506396, 0.0 ], [ 7.531454278998652, 6.595630166829905, 0.0 ] ] ] ] } },
+                { "type": "Feature", "properties": { "Text": "P132", "area": 450.54, "price": "₦15,000,000", "status": "available" }, "geometry": { "type": "MultiPolygon", "coordinates": [ [ [ [ 7.53141618090954, 6.595498848961174, 0.0 ], [ 7.531377782987565, 6.595366497573059, 0.0 ], [ 7.531115410213687, 6.595421701718424, 0.0 ], [ 7.531153808062537, 6.595554053111969, 0.0 ], [ 7.53141618090954, 6.595498848961174, 0.0 ] ] ] ] } },
+                { "type": "Feature", "properties": { "Text": "P78", "area": 451.41, "price": "₦15,000,000", "status": "sold" }, "geometry": { "type": "MultiPolygon", "coordinates": [ [ [ [ 7.53147439022832, 6.596349438619743, 0.0 ], [ 7.531416229096986, 6.596153148926523, 0.0 ], [ 7.531239150293819, 6.596190406830315, 0.0 ], [ 7.531297401323338, 6.596386677599202, 0.0 ], [ 7.53147439022832, 6.596349438619743, 0.0 ] ] ] ] } }
+                // Additional parcels would be added here
+            ]
+        };
+
+        // Surrounding estates data with dotted boundaries
+        const nearbyEstatesData = {
+            "type": "FeatureCollection",
+            "features": [
+                { "type": "Feature", "properties": { "Label": "Trade More Estate" }, "geometry": { "type": "MultiPolygon", "coordinates": [ [ [ [ 7.53625351698971, 6.59717121911752 ], [ 7.536350923898975, 6.594816673385018 ], [ 7.536805489475548, 6.592913676193908 ], [ 7.537454868870651, 6.593074947425646 ], [ 7.538212478164941, 6.593042693183494 ], [ 7.538558813842329, 6.593451246762332 ], [ 7.539651935824086, 6.593634020622794 ], [ 7.539922510572048, 6.594160839019973 ], [ 7.541188800392501, 6.594397369546765 ], [ 7.54187064875736, 6.593913556984904 ], [ 7.54267155001132, 6.593773788823557 ], [ 7.543212699507241, 6.594085579283228 ], [ 7.544717095105898, 6.594730662370196 ], [ 7.547087329898027, 6.594322109845939 ], [ 7.547834116202396, 6.594709159614159 ], [ 7.548764893335378, 6.594773667879473 ], [ 7.549046291073254, 6.595537015048117 ], [ 7.548570079516847, 6.595795047627935 ], [ 7.544868616964755, 6.596891684593063 ], [ 7.541177977402582, 6.597149716467395 ], [ 7.537076064223507, 6.597214224414979 ], [ 7.53625351698971, 6.59717121911752 ] ] ] ] } },
+                { "type": "Feature", "properties": { "Label": "Himalayas Estate" }, "geometry": { "type": "MultiPolygon", "coordinates": [ [ [ [ 7.554122273344987, 6.595010198113789 ], [ 7.554587661911476, 6.595827301690963 ], [ 7.554641776861067, 6.596332615070988 ], [ 7.55491235160903, 6.597224975738758 ], [ 7.555139634397314, 6.597192721766715 ], [ 7.555182926356989, 6.597407748207328 ], [ 7.555009758518294, 6.597472256121313 ], [ 7.555009758518294, 6.597526012709884 ], [ 7.555150457387235, 6.59823559913228 ], [ 7.55531280223601, 6.59820334522604 ], [ 7.559706936142881, 6.597429250846256 ], [ 7.559620352223533, 6.596719663268847 ], [ 7.564101070049751, 6.596268107008616 ], [ 7.564555635626323, 6.599063448673627 ], [ 7.565789456477019, 6.598955935824363 ], [ 7.56760771878331, 6.599816037964968 ], [ 7.568560141896128, 6.593107201665696 ], [ 7.565075139142404, 6.58973124648985 ], [ 7.563408398694973, 6.588484072522417 ], [ 7.558559699211529, 6.59213957355127 ], [ 7.556503331127035, 6.593859800004433 ], [ 7.555832305752092, 6.594139336239209 ], [ 7.555832305752092, 6.594139336239209 ], [ 7.554122273344987, 6.595010198113789 ] ] ] ] } },
+                { "type": "Feature", "properties": { "Label": "FRSC Estate" }, "geometry": { "type": "MultiPolygon", "coordinates": [ [ [ [ 7.54903546808334, 6.586656311905511 ], [ 7.551524755764572, 6.585043576358317 ], [ 7.552780222595104, 6.58409743573158 ], [ 7.553884167566782, 6.582742731240158 ], [ 7.555334448215845, 6.578657092139343 ], [ 7.56031302357831, 6.583301816081439 ], [ 7.55814842559463, 6.585731677499477 ], [ 7.556395101227851, 6.586656311905511 ], [ 7.553710999728086, 6.59072038223407 ], [ 7.551957675361307, 6.591279458086351 ], [ 7.551957675361307, 6.591279458086351 ], [ 7.54903546808334, 6.586656311905511 ] ] ] ] } }
+            ]
+        };
+
+        // Location markers data
+        const nearbyLocationsData = {
+            "type": "FeatureCollection",
+            "features": [
+                { "type": "Feature", "properties": { "Labels": "Civil Defense Estate" }, "geometry": { "type": "Point", "coordinates": [ 7.561622605358441, 6.597827049498076 ] } },
+                { "type": "Feature", "properties": { "Labels": "Pilgrimage Centre" }, "geometry": { "type": "Point", "coordinates": [ 7.570356758222593, 6.601503984073124 ] } },
+                { "type": "Feature", "properties": { "Labels": "Timber Market Ugwuogo" }, "geometry": { "type": "Point", "coordinates": [ 7.556860489794349, 6.602536101151153 ] } },
+                { "type": "Feature", "properties": { "Labels": "Seaman Global Estate" }, "geometry": { "type": "Point", "coordinates": [ 7.533688468379058, 6.600891163539954 ] } },
+                { "type": "Feature", "properties": { "Labels": "Breeze Garden Estate" }, "geometry": { "type": "Point", "coordinates": [ 7.529207750552842, 6.597160467792579 ] } }
+            ]
+        };
+
+        // Map initialization
+        let map;
+        let parcelLayer;
+        let estatesLayer;
+        let locationsLayer;
+        let currentFilter = 'all';
+
+        function initMap() {
+            // Create map
+            map = L.map('map').setView([6.596500, 7.531000], 16);
+
+            // Base layers
+            const streetLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors',
+                maxZoom: 19
+            });
+
+            const satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+                attribution: '© Esri',
+                maxZoom: 19
+            });
+
+            streetLayer.addTo(map);
+
+            // Base layers control
+            const baseLayers = {
+                "Street View": streetLayer,
+                "Satellite View": satelliteLayer
+            };
+
+            // Initialize data layers
+            initializeDataLayers();
+
+            // Layer control
+            const overlays = {
+                "Estate Parcels": parcelLayer,
+                "Surrounding Estates": estatesLayer,
+                "Nearby Locations": locationsLayer
+            };
+
+            L.control.layers(baseLayers, overlays).addTo(map);
+
+            // Add legend
+            addLegend();
+
+            // Fit to bounds
+            if (silverstoneData.features.length > 0) {
+                map.fitBounds(parcelLayer.getBounds(), { padding: [20, 20] });
+            }
+        }
+
+        function initializeDataLayers() {
+            // Parcel layer
+            parcelLayer = L.geoJSON(silverstoneData, {
+                style: function(feature) {
+                    return getParcelStyle(feature.properties.status || 'available');
+                },
+                onEachFeature: function(feature, layer) {
+                    const props = feature.properties;
+                    const popupContent = `
+                        <div class="popup-content">
+                            <div class="popup-title">Parcel ${props.Text}</div>
+                            <div class="popup-info"><strong>Area:</strong> ${props.area} sqm</div>
+                            <div class="popup-info"><strong>Price:</strong> ${props.price}</div>
+                            <div class="popup-status status-${props.status || 'available'}">${(props.status || 'available').toUpperCase()}</div>
+                        </div>
+                    `;
+                    layer.bindPopup(popupContent);
+                }
+            }).addTo(map);
+
+            // Estates layer with dotted boundaries
+            estatesLayer = L.geoJSON(nearbyEstatesData, {
+                style: {
+                    color: '#e67e22',
+                    weight: 2,
+                    opacity: 0.8,
+                    fillColor: '#e67e22',
+                    fillOpacity: 0.1,
+                    dashArray: '8, 8'
+                },
+                onEachFeature: function(feature, layer) {
+                    const props = feature.properties;
+                    const popupContent = `
+                        <div class="popup-content">
+                            <div class="popup-title">${props.Label}</div>
+                            <div class="popup-info">Surrounding Estate</div>
+                        </div>
+                    `;
+                    layer.bindPopup(popupContent);
+                    
+                    // Add estate label
+                    const center = layer.getBounds().getCenter();
+                    L.marker(center, {
+                        icon: L.divIcon({
+                            className: 'estate-label',
+                            html: `<div style="background: rgba(230, 126, 34, 0.9); color: white; padding: 2px 6px; border-radius: 3px; font-size: 11px; font-weight: bold; white-space: nowrap;">${props.Label}</div>`,
+                            iconSize: [0, 0],
+                            iconAnchor: [0, 0]
+                        })
+                    }).addTo(map);
+                }
+            }).addTo(map);
+
+            // Locations layer
+            locationsLayer = L.geoJSON(nearbyLocationsData, {
+                pointToLayer: function(feature, latlng) {
+                    return L.circleMarker(latlng, {
+                        radius: 6,
+                        fillColor: '#3498db',
+                        color: '#2980b9',
+                        weight: 2,
+                        opacity: 1,
+                        fillOpacity: 0.8
+                    });
+                },
+                onEachFeature: function(feature, layer) {
+                    const props = feature.properties;
+                    const popupContent = `
+                        <div class="popup-content">
+                            <div class="popup-title">${props.Labels}</div>
+                            <div class="popup-info">Nearby Location</div>
+                        </div>
+                    `;
+                    layer.bindPopup(popupContent);
+                    
+                    // Add location label
+                    L.marker(layer.getLatLng(), {
+                        icon: L.divIcon({
+                            className: 'location-label',
+                            html: `<div style="background: rgba(52, 152, 219, 0.9); color: white; padding: 2px 6px; border-radius: 3px; font-size: 10px; font-weight: bold; white-space: nowrap; margin-left: 10px;">${props.Labels}</div>`,
+                            iconSize: [0, 0],
+                            iconAnchor: [-10, 0]
+                        })
+                    }).addTo(map);
+                }
+            }).addTo(map);
+        }
+
+        function getParcelStyle(status) {
+            const styles = {
+                available: { color: '#28a745', fillColor: '#28a745', fillOpacity: 0.3, weight: 2, opacity: 1 },
+                reserved: { color: '#ffc107', fillColor: '#ffc107', fillOpacity: 0.3, weight: 2, opacity: 1 },
+                sold: { color: '#dc3545', fillColor: '#dc3545', fillOpacity: 0.3, weight: 2, opacity: 1 }
+            };
+            return styles[status] || styles.available;
+        }
+
+        function addLegend() {
+            const legend = L.control({position: 'topright'});
+            legend.onAdd = function(map) {
+                const div = L.DomUtil.create('div', 'leaflet-control-legend');
+                div.innerHTML = `
+                    <div class="legend-title">🏘️ Silverstone Estate</div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #28a745;"></div>
+                        <span class="legend-text">Available Parcels</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #ffc107;"></div>
+                        <span class="legend-text">Reserved Parcels</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #dc3545;"></div>
+                        <span class="legend-text">Sold Parcels</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #e67e22; border: 2px dashed #e67e22; background: transparent;"></div>
+                        <span class="legend-text">Nearby Estates</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #3498db; border-radius: 50%;"></div>
+                        <span class="legend-text">Locations</span>
+                    </div>
+                `;
+                return div;
+            };
+            legend.addTo(map);
+        }
+
+        // Control functions
+        function showAllParcels() {
+            currentFilter = 'all';
+            updateButtons();
+            parcelLayer.clearLayers();
+            parcelLayer.addData(silverstoneData);
+        }
+
+        function filterParcels(status) {
+            currentFilter = status;
+            updateButtons();
+            const filteredData = {
+                ...silverstoneData,
+                features: silverstoneData.features.filter(f => f.properties.status === status)
+            };
+            parcelLayer.clearLayers();
+            parcelLayer.addData(filteredData);
+        }
+
+        function updateButtons() {
+            document.querySelectorAll('.btn').forEach(btn => btn.classList.remove('active'));
+            const buttons = document.querySelectorAll('.btn');
+            if (currentFilter === 'all') buttons[0].classList.add('active');
+            else if (currentFilter === 'available') buttons[1].classList.add('active');
+            else if (currentFilter === 'reserved') buttons[2].classList.add('active');
+            else if (currentFilter === 'sold') buttons[3].classList.add('active');
+        }
+
+        function changeView() {
+            const selector = document.getElementById('viewSelector');
+            // This would switch between base layers
+        }
+
+        function resetView() {
+            map.fitBounds(parcelLayer.getBounds(), { padding: [20, 20] });
+        }
+
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
+        // Initialize the map when page loads
+        document.addEventListener('DOMContentLoaded', initMap);
+    </script>
+</body>
+</html>

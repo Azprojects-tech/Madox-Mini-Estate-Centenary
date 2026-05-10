@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parcel Vision Pro - Embed Ready</title>
+    <style>
+        /* CORS-SAFE STYLING - No external dependencies */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            background: #f8f9fa;
+            overflow: hidden;
+        }
+        
+        .embed-container {
+            width: 100%;
+            height: 100vh;
+            position: relative;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .loading-screen {
+            text-align: center;
+            color: white;
+            z-index: 1000;
+        }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255,255,255,0.3);
+            border-top: 4px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .portal-frame {
+            width: 100%;
+            height: 100%;
+            border: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            background: white;
+            display: none;
+        }
+        
+        .error-message {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            max-width: 500px;
+            display: none;
+        }
+        
+        .retry-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+        
+        .retry-btn:hover {
+            background: #218838;
+        }
+        
+        /* Mobile optimizations */
+        @media (max-width: 768px) {
+            .embed-container {
+                height: 100vh;
+                height: -webkit-fill-available;
+            }
+            
+            .error-message {
+                margin: 20px;
+                max-width: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="embed-container">
+        <!-- Loading Screen -->
+        <div class="loading-screen" id="loadingScreen">
+            <div class="spinner"></div>
+            <h3>Loading Parcel Vision Pro...</h3>
+            <p>Connecting to estate management system</p>
+        </div>
+        
+        <!-- Error Screen -->
+        <div class="error-message" id="errorScreen">
+            <h3>🔧 Connection Issue</h3>
+            <p>Unable to load the estate portal. This might be due to:</p>
+            <ul style="margin: 10px 0; text-align: left;">
+                <li>Network connectivity issues</li>
+                <li>Server maintenance</li>
+                <li>Browser security settings</li>
+            </ul>
+            <button class="retry-btn" onclick="retryConnection()">🔄 Retry Connection</button>
+        </div>
+        
+        <!-- Main Portal Frame -->
+        <iframe id="portalFrame" class="portal-frame" 
+                title="Parcel Vision Pro Estate Portal"
+                allow="fullscreen; geolocation">
+        </iframe>
+    </div>
+
+    <script>
+        // EMBED CONFIGURATION - Client customizable
+        const EMBED_CONFIG = {
+            portalUrl: 'https://azproject.successhub.ngo/events/',
+            clientDomain: window.location.hostname,
+            retryAttempts: 3,
+            loadTimeout: 15000,
+            fallbackUrl: 'https://parcel-vision-pro-fallback.netlify.app/'
+        };
+        
+        let currentAttempt = 0;
+        
+        function initializeEmbed() {
+            console.log('🚀 Parcel Vision Pro Embed Initializing...');
+            console.log('📍 Client Domain:', EMBED_CONFIG.clientDomain);
+            
+            const frame = document.getElementById('portalFrame');
+            const loadingScreen = document.getElementById('loadingScreen');
+            const errorScreen = document.getElementById('errorScreen');
+            
+            // Set iframe source with client domain parameter
+            const embedUrl = `${EMBED_CONFIG.portalUrl}?embed=true&client=${encodeURIComponent(EMBED_CONFIG.clientDomain)}&v=${Date.now()}`;
+            frame.src = embedUrl;
+            
+            // Set loading timeout
+            const loadTimeout = setTimeout(() => {
+                handleLoadError();
+            }, EMBED_CONFIG.loadTimeout);
+            
+            // Handle successful load
+            frame.onload = function() {
+                console.log('✅ Portal loaded successfully');
+                clearTimeout(loadTimeout);
+                loadingScreen.style.display = 'none';
+                errorScreen.style.display = 'none';
+                frame.style.display = 'block';
+                
+                // Notify parent window that embed is ready
+                if (window.parent !== window) {
+                    window.parent.postMessage({
+                        type: 'PARCEL_VISION_READY',
+                        source: 'parcel-vision-embed'
+                    }, '*');
+                }
+            };
+            
+            // Handle load error
+            frame.onerror = function() {
+                console.log('❌ Portal load error');
+                clearTimeout(loadTimeout);
+                handleLoadError();
+            };
+        }
+        
+        function handleLoadError() {
+            console.log(`⚠️ Load attempt ${currentAttempt + 1} failed`);
+            currentAttempt++;
+            
+            if (currentAttempt < EMBED_CONFIG.retryAttempts) {
+                console.log('🔄 Retrying in 2 seconds...');
+                setTimeout(initializeEmbed, 2000);
+            } else {
+                console.log('❌ All retry attempts failed, showing error screen');
+                showErrorScreen();
+            }
+        }
+        
+        function showErrorScreen() {
+            const loadingScreen = document.getElementById('loadingScreen');
+            const errorScreen = document.getElementById('errorScreen');
+            
+            loadingScreen.style.display = 'none';
+            errorScreen.style.display = 'block';
+        }
+        
+        function retryConnection() {
+            console.log('🔄 Manual retry initiated');
+            currentAttempt = 0;
+            document.getElementById('errorScreen').style.display = 'none';
+            document.getElementById('loadingScreen').style.display = 'block';
+            initializeEmbed();
+        }
+        
+        // Handle iframe communication
+        window.addEventListener('message', function(event) {
+            // Only accept messages from our portal domain
+            if (event.origin !== new URL(EMBED_CONFIG.portalUrl).origin) {
+                return;
+            }
+            
+            const data = event.data;
+            console.log('📨 Message from portal:', data);
+            
+            // Handle portal events
+            switch (data.type) {
+                case 'PORTAL_READY':
+                    console.log('✅ Portal fully initialized');
+                    break;
+                case 'PARCEL_SELECTED':
+                    console.log('📍 Parcel selected:', data.parcelId);
+                    break;
+                case 'RESIZE_REQUEST':
+                    console.log('📐 Resize request:', data.dimensions);
+                    break;
+            }
+        });
+        
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', initializeEmbed);
+        
+        // Auto-retry on network reconnection
+        window.addEventListener('online', function() {
+            console.log('🌐 Network reconnected, retrying...');
+            if (document.getElementById('errorScreen').style.display !== 'none') {
+                retryConnection();
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ESTATE_NAME}} - Estate Management Portal</title>
+    
+    <!-- TEMPLATE PLACEHOLDER SYSTEM -->
+    <!-- This file will be processed to replace all {{PLACEHOLDER}} values -->
+    <!-- Client Data: {{CLIENT_NAME}}, {{CLIENT_EMAIL}}, {{CLIENT_PHONE}} -->
+    <!-- Estate: {{ESTATE_NAME}}, {{ESTATE_LOCATION}} -->
+    <!-- Technical: {{SHEET_ID}}, {{GEOJSON_FILE}} -->
+    
+    <style>
+    .az-watermark {
+        position: fixed;
+        top: 140px;
+        right: 15px;
+        background: rgba(255, 255, 255, 0.85);
+        padding: 6px 10px;
+        border-radius: 6px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        z-index: 1200;
+        font-family: Arial, sans-serif;
+        font-size: 11px;
+        color: #666;
+        border: 1px solid rgba(44, 95, 63, 0.3);
+        max-width: 200px;
+        opacity: 0.9;
+    }
+    
+    .az-logo {
+        width: 40px;
+        height: auto;
+        margin-right: 8px;
+        vertical-align: middle;
+    }
+    
+    .az-contact {
+        font-weight: bold;
+        color: #2c5f3f;
+        text-decoration: none;
+    }
+    
+    .az-footer {
+        position: fixed;
+        bottom: 15px;
+        left: 15px;
+        right: 15px;
+        background: rgba(44, 95, 63, 0.8);
+        color: white;
+        padding: 4px 8px;
+        font-family: Arial, sans-serif;
+        font-size: 9px;
+        border-radius: 3px;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+        z-index: 1100;
+        opacity: 0.85;
+        text-align: center;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .az-footer a {
+        color: white;
+        text-decoration: none;
+        font-weight: bold;
+    }
+    
+    @media (max-width: 768px) {
+        .az-watermark {
+            right: 10px;
+            top: 160px;
+            font-size: 10px;
+            padding: 4px 6px;
+            max-width: 180px;
+        }
+        
+        .az-footer {
+            font-size: 8px;
+            padding: 3px 6px;
+            flex-direction: column;
+            gap: 2px;
+        }
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        overflow-x: hidden;
+    }
+
+    .header {
+        background: rgba(255, 255, 255, 0.95);
+        padding: 15px 20px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        backdrop-filter: blur(10px);
+    }
+
+    .header h1 {
+        color: #2c3e50;
+        font-size: 1.8em;
+        font-weight: 700;
+        text-align: center;
+        margin-bottom: 5px;
+    }
+
+    .header p {
+        color: #7f8c8d;
+        text-align: center;
+        font-size: 0.9em;
+    }
+
+    .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 20px;
+        position: relative;
+    }
+
+    .controls {
+        background: rgba(255, 255, 255, 0.95);
+        padding: 15px;
+        border-radius: 12px;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        backdrop-filter: blur(10px);
+    }
+
+    .controls h2 {
+        color: #2c3e50;
+        margin-bottom: 15px;
+        font-size: 1.3em;
+        font-weight: 600;
+    }
+
+    .button-group {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: center;
+    }
+
+    button {
+        background: linear-gradient(45deg, #3498db, #2980b9);
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 25px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 14px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+    }
+
+    button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+        background: linear-gradient(45deg, #2980b9, #3498db);
+    }
+
+    button.active {
+        background: linear-gradient(45deg, #27ae60, #2ecc71);
+        box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
+    }
+
+    button.admin {
+        background: linear-gradient(45deg, #e74c3c, #c0392b);
+        box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+    }
+
+    button.admin:hover {
+        background: linear-gradient(45deg, #c0392b, #e74c3c);
+        box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4);
+    }
+
+    #map {
+        width: 100%;
+        height: 60vh;
+        border-radius: 12px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        margin-bottom: 20px;
+        background: #f8f9fa;
+    }
+
+    .dashboard {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 20px;
+        margin-bottom: 20px;
+    }
+
+    .dashboard-card {
+        background: rgba(255, 255, 255, 0.95);
+        padding: 25px;
+        border-radius: 16px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .dashboard-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #3498db, #2ecc71, #f39c12, #e74c3c);
+        opacity: 0.8;
+    }
+
+    .dashboard-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 48px rgba(0,0,0,0.15);
+    }
+
+    .card-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+
+    .card-icon {
+        font-size: 2em;
+        margin-right: 15px;
+        padding: 10px;
+        border-radius: 12px;
+        background: rgba(52, 152, 219, 0.1);
+    }
+
+    .card-title {
+        font-size: 0.9em;
+        color: #7f8c8d;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .card-value {
+        font-size: 2.2em;
+        font-weight: 700;
+        color: #2c3e50;
+        margin-bottom: 8px;
+    }
+
+    .card-subtitle {
+        font-size: 0.85em;
+        color: #95a5a6;
+        font-weight: 500;
+    }
+
+    .info-panel {
+        background: rgba(255, 255, 255, 0.95);
+        padding: 25px;
+        border-radius: 16px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        backdrop-filter: blur(10px);
+        margin-bottom: 20px;
+    }
+
+    .info-panel h3 {
+        color: #2c3e50;
+        margin-bottom: 15px;
+        font-size: 1.4em;
+        font-weight: 600;
+    }
+
+    .contact-info {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin-bottom: 15px;
+    }
+
+    .contact-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px;
+        background: rgba(52, 152, 219, 0.05);
+        border-radius: 8px;
+        border-left: 4px solid #3498db;
+    }
+
+    .contact-item strong {
+        color: #2c3e50;
+        font-weight: 600;
+    }
+
+    .legend {
+        background: rgba(255, 255, 255, 0.95);
+        padding: 20px;
+        border-radius: 12px;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    .legend h3 {
+        color: #2c3e50;
+        margin-bottom: 15px;
+        font-size: 1.2em;
+        font-weight: 600;
+    }
+
+    .legend-items {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 10px;
+    }
+
+    .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px;
+        border-radius: 6px;
+        background: rgba(0,0,0,0.02);
+    }
+
+    .legend-color {
+        width: 20px;
+        height: 20px;
+        border-radius: 4px;
+        border: 2px solid rgba(0,0,0,0.2);
+    }
+
+    /* Mobile Optimizations */
+    @media (max-width: 768px) {
+        .container {
+            padding: 15px;
+        }
+        
+        .header {
+            padding: 12px 15px;
+        }
+        
+        .header h1 {
+            font-size: 1.4em;
+        }
+        
+        #map {
+            height: 50vh;
+            margin-bottom: 15px;
+        }
+        
+        .dashboard {
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+        
+        .dashboard-card {
+            padding: 20px;
+        }
+        
+        .card-value {
+            font-size: 1.8em;
+        }
+        
+        .button-group {
+            justify-content: center;
+        }
+        
+        button {
+            padding: 10px 20px;
+            font-size: 13px;
+        }
+        
+        .contact-info {
+            grid-template-columns: 1fr;
+        }
+        
+        .legend-items {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .dashboard {
+            grid-template-columns: 1fr;
+        }
+        
+        .dashboard-card {
+            padding: 15px;
+        }
+        
+        .card-value {
+            font-size: 1.6em;
+        }
+        
+        #map {
+            height: 45vh;
+        }
+    }
+
+    /* Loading Animation */
+    .loading {
+        display: none;
+        text-align: center;
+        padding: 20px;
+        color: #7f8c8d;
+    }
+
+    .spinner {
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #3498db;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 10px;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    /* Success/Error Messages */
+    .message {
+        padding: 15px;
+        border-radius: 8px;
+        margin: 10px 0;
+        font-weight: 500;
+    }
+
+    .message.success {
+        background-color: rgba(46, 204, 113, 0.1);
+        border: 1px solid rgba(46, 204, 113, 0.3);
+        color: #27ae60;
+    }
+
+    .message.error {
+        background-color: rgba(231, 76, 60, 0.1);
+        border: 1px solid rgba(231, 76, 60, 0.3);
+        color: #e74c3c;
+    }
+    </style>
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+</head>
+
+<body>
+    <!-- AZ PropTech Watermark -->
+    <div class="az-watermark">
+        🏢 <strong>{{ESTATE_NAME}}</strong><br>
+        📞 <a href="tel:{{CLIENT_PHONE}}" class="az-contact">{{CLIENT_PHONE}}</a><br>
+        📧 <a href="mailto:{{CLIENT_EMAIL}}" class="az-contact">{{CLIENT_EMAIL}}</a>
+    </div>
+
+    <!-- AZ PropTech Footer -->
+    <div class="az-footer">
+        <span>Powered by AZ PropTech Solutions</span>
+        <span>📞 <a href="tel:+2348012345678">+234 801 234 5678</a></span>
+    </div>
+
+    <div class="header">
+        <h1>{{ESTATE_NAME}} Management Portal</h1>
+        <p>{{ESTATE_LOCATION}} • Professional Estate Management System</p>
+    </div>
+
+    <div class="container">
+        <div class="controls">
+            <h2>🎛️ Map Controls</h2>
+            <div class="button-group">
+                <button id="toggleNumbers" class="active">🔢 Numbers</button>
+                <button id="toggleOverlay" class="active">🌍 Land</button>
+                <button id="showAll">👁️ Show All</button>
+                <button id="adminMode" class="admin" onclick="openGoogleSheets()">⚙️ Admin</button>
+                <button onclick="refreshData()">🔄 Refresh</button>
+            </div>
+        </div>
+
+        <div id="map"></div>
+        
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Loading estate data...</p>
+        </div>
+
+        <!-- Dashboard Cards -->
+        <div class="dashboard" id="dashboard">
+            <!-- Cards will be generated dynamically -->
+        </div>
+
+        <div class="info-panel">
+            <h3>📞 Contact Information</h3>
+            <div class="contact-info">
+                <div class="contact-item">
+                    <span>🏢</span>
+                    <div>
+                        <strong>Estate:</strong> {{ESTATE_NAME}}
+                    </div>
+                </div>
+                <div class="contact-item">
+                    <span>👤</span>
+                    <div>
+                        <strong>Contact:</strong> {{CLIENT_NAME}}
+                    </div>
+                </div>
+                <div class="contact-item">
+                    <span>📞</span>
+                    <div>
+                        <strong>Phone:</strong> <a href="tel:{{CLIENT_PHONE}}">{{CLIENT_PHONE}}</a>
+                    </div>
+                </div>
+                <div class="contact-item">
+                    <span>📧</span>
+                    <div>
+                        <strong>Email:</strong> <a href="mailto:{{CLIENT_EMAIL}}">{{CLIENT_EMAIL}}</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="legend">
+            <h3>🎨 Parcel Status Legend</h3>
+            <div class="legend-items">
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #2ecc71;"></div>
+                    <span><strong>Available</strong> - Ready for purchase</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #e74c3c;"></div>
+                    <span><strong>Sold</strong> - Already purchased</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #f39c12;"></div>
+                    <span><strong>Reserved</strong> - Deposit paid</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #3498db;"></div>
+                    <span><strong>Special</strong> - Under development</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    <script>
+        // TEMPLATE CONFIGURATION
+        const CLIENT_CONFIG = {
+            estateName: '{{ESTATE_NAME}}',
+            clientName: '{{CLIENT_NAME}}',
+            clientEmail: '{{CLIENT_EMAIL}}',
+            clientPhone: '{{CLIENT_PHONE}}',
+            estateLocation: '{{ESTATE_LOCATION}}',
+            googleSheetsId: '{{SHEET_ID}}',
+            geojsonFile: '{{GEOJSON_FILE}}'
+        };
+
+        // Global variables
+        let map;
+        let parcelsLayer;
+        let numbersVisible = true;
+        let overlayVisible = true;
+        let sheetData = [];
+        let parcelsData = null;
+
+        // Google Sheets integration
+        const SHEET_ID = CLIENT_CONFIG.googleSheetsId;
+        const API_KEY = 'AIzaSyBHkIHbTMjXnBhHSG4WbY5R2g3cGkXSRVc';
+        const SHEET_RANGE = 'Sheet1!A:I';
+
+        // Initialize map
+        function initMap() {
+            map = L.map('map', {
+                zoomControl: true,
+                scrollWheelZoom: true,
+                doubleClickZoom: true,
+                boxZoom: true,
+                keyboard: true,
+                dragging: true,
+                touchZoom: true
+            }).setView([9.0765, 7.3986], 16);
+
+            L.tileLayer('https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
+                maxZoom: 20,
+                subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
+                attribution: '© Google | {{ESTATE_NAME}} Portal'
+            }).addTo(map);
+
+            loadParcelsData();
+            loadGoogleSheetsData();
+        }
+
+        // Load parcels data from GeoJSON
+        function loadParcelsData() {
+            document.getElementById('loading').style.display = 'block';
+            
+            fetch(CLIENT_CONFIG.geojsonFile)
+                .then(response => response.json())
+                .then(data => {
+                    parcelsData = data;
+                    console.log('Parcels data loaded:', data.features.length, 'parcels');
+                    updateParcelsDisplay();
+                    document.getElementById('loading').style.display = 'none';
+                })
+                .catch(error => {
+                    console.error('Error loading parcels data:', error);
+                    showMessage('Error loading estate data. Please refresh the page.', 'error');
+                    document.getElementById('loading').style.display = 'none';
+                });
+        }
+
+        // Load Google Sheets data
+        function loadGoogleSheetsData() {
+            const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${SHEET_RANGE}?key=${API_KEY}`;
+            
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.values) {
+                        sheetData = data.values;
+                        console.log('Google Sheets data loaded:', sheetData.length, 'rows');
+                        updateParcelsDisplay();
+                        generateDashboard();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading Google Sheets data:', error);
+                    showMessage('Unable to load latest data. Showing cached information.', 'error');
+                });
+        }
+
+        // Update parcels display
+        function updateParcelsDisplay() {
+            if (!parcelsData) return;
+
+            if (parcelsLayer) {
+                map.removeLayer(parcelsLayer);
+            }
+
+            parcelsLayer = L.geoJSON(parcelsData, {
+                style: function(feature) {
+                    return getParcelStyle(feature);
+                },
+                onEachFeature: function(feature, layer) {
+                    const parcelInfo = getParcelInfo(feature);
+                    layer.bindPopup(createPopupContent(parcelInfo));
+                    
+                    if (numbersVisible) {
+                        const center = layer.getBounds().getCenter();
+                        const label = L.marker(center, {
+                            icon: L.divIcon({
+                                className: 'parcel-label',
+                                html: `<div style="background: rgba(255,255,255,0.9); padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 12px; border: 1px solid #333; color: #333;">${parcelInfo.id || 'N/A'}</div>`,
+                                iconSize: [30, 20],
+                                iconAnchor: [15, 10]
+                            })
+                        });
+                        label.addTo(map);
+                    }
+                }
+            });
+
+            if (overlayVisible) {
+                parcelsLayer.addTo(map);
+            }
+
+            // Fit map to parcels bounds
+            if (parcelsData.features.length > 0) {
+                const bounds = parcelsLayer.getBounds();
+                map.fitBounds(bounds, { padding: [20, 20] });
+            }
+        }
+
+        // Get parcel style based on status
+        function getParcelStyle(feature) {
+            const parcelInfo = getParcelInfo(feature);
+            let color = '#3498db'; // Default blue
+            let fillOpacity = 0.6;
+            
+            switch (parcelInfo.status?.toLowerCase()) {
+                case 'sold':
+                    color = '#e74c3c'; // Red
+                    break;
+                case 'available':
+                    color = '#2ecc71'; // Green
+                    break;
+                case 'reserved':
+                    color = '#f39c12'; // Orange
+                    break;
+                default:
+                    color = '#3498db'; // Blue
+            }
+
+            return {
+                color: color,
+                weight: 2,
+                fillColor: color,
+                fillOpacity: fillOpacity,
+                opacity: 0.8
+            };
+        }
+
+        // Get parcel information
+        function getParcelInfo(feature) {
+            const properties = feature.properties || {};
+            const parcelId = properties.PARCEL_ID || properties.parcel_id || properties.id || 'Unknown';
+            
+            // Find matching data in Google Sheets
+            let sheetRow = null;
+            if (sheetData.length > 1) {
+                sheetRow = sheetData.find(row => row[0] === parcelId);
+            }
+            
+            return {
+                id: parcelId,
+                status: sheetRow ? sheetRow[1] : (properties.status || 'Available'),
+                price: sheetRow ? sheetRow[2] : (properties.price || 'Contact for pricing'),
+                size: sheetRow ? sheetRow[3] : (properties.size || 'N/A'),
+                buyer: sheetRow ? sheetRow[4] : '',
+                contact: sheetRow ? sheetRow[5] : '',
+                notes: sheetRow ? sheetRow[6] : ''
+            };
+        }
+
+        // Create popup content
+        function createPopupContent(parcelInfo) {
+            const statusColors = {
+                'available': '#2ecc71',
+                'sold': '#e74c3c',
+                'reserved': '#f39c12'
+            };
+            
+            const statusColor = statusColors[parcelInfo.status?.toLowerCase()] || '#3498db';
+            
+            return `
+                <div style="min-width: 200px; font-family: 'Segoe UI', sans-serif;">
+                    <h4 style="margin: 0 0 10px 0; color: #2c3e50; border-bottom: 2px solid ${statusColor}; padding-bottom: 5px;">
+                        🏡 Parcel ${parcelInfo.id}
+                    </h4>
+                    <div style="margin-bottom: 8px;">
+                        <strong>Status:</strong> 
+                        <span style="background: ${statusColor}; color: white; padding: 2px 8px; border-radius: 12px; font-size: 12px; font-weight: bold;">
+                            ${parcelInfo.status || 'Available'}
+                        </span>
+                    </div>
+                    <div style="margin-bottom: 8px;"><strong>💰 Price:</strong> ${parcelInfo.price}</div>
+                    <div style="margin-bottom: 8px;"><strong>📏 Size:</strong> ${parcelInfo.size}</div>
+                    ${parcelInfo.buyer ? `<div style="margin-bottom: 8px;"><strong>👤 Buyer:</strong> ${parcelInfo.buyer}</div>` : ''}
+                    ${parcelInfo.contact ? `<div style="margin-bottom: 8px;"><strong>📞 Contact:</strong> ${parcelInfo.contact}</div>` : ''}
+                    <div style="margin-top: 10px; padding-top: 8px; border-top: 1px solid #eee;">
+                        <button onclick="contactEstate('${parcelInfo.id}')" style="background: #3498db; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; width: 100%;">
+                            📞 Contact for Details
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Generate dashboard
+        function generateDashboard() {
+            if (sheetData.length <= 1) return; // No data or only headers
+            
+            const stats = calculateStats();
+            const dashboard = document.getElementById('dashboard');
+            
+            dashboard.innerHTML = `
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <div class="card-icon">💰</div>
+                        <div class="card-title">Total Revenue</div>
+                    </div>
+                    <div class="card-value">₦${stats.totalRevenue.toLocaleString()}</div>
+                    <div class="card-subtitle">All completed sales</div>
+                </div>
+
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <div class="card-icon">🏡</div>
+                        <div class="card-title">Total Parcels</div>
+                    </div>
+                    <div class="card-value">${stats.totalParcels}</div>
+                    <div class="card-subtitle">Estate inventory</div>
+                </div>
+
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <div class="card-icon">✅</div>
+                        <div class="card-title">Sold</div>
+                    </div>
+                    <div class="card-value">${stats.sold}</div>
+                    <div class="card-subtitle">Completed sales</div>
+                </div>
+
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <div class="card-icon">🔒</div>
+                        <div class="card-title">Reserved</div>
+                    </div>
+                    <div class="card-value">${stats.reserved}</div>
+                    <div class="card-subtitle">Pending completion</div>
+                </div>
+
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <div class="card-icon">🟢</div>
+                        <div class="card-title">Available</div>
+                    </div>
+                    <div class="card-value">${stats.available}</div>
+                    <div class="card-subtitle">Ready for sale</div>
+                </div>
+
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <div class="card-icon">💡</div>
+                        <div class="card-title">Expected Revenue</div>
+                    </div>
+                    <div class="card-value">₦${stats.expectedRevenue.toLocaleString()}</div>
+                    <div class="card-subtitle">From reserved parcels</div>
+                </div>
+
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <div class="card-icon">📊</div>
+                        <div class="card-title">Occupancy Rate</div>
+                    </div>
+                    <div class="card-value">${stats.occupancyRate}%</div>
+                    <div class="card-subtitle">Sold + Reserved</div>
+                </div>
+
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <div class="card-icon">💎</div>
+                        <div class="card-title">Average Price</div>
+                    </div>
+                    <div class="card-value">₦${stats.averagePrice.toLocaleString()}</div>
+                    <div class="card-subtitle">Per parcel</div>
+                </div>
+            `;
+        }
+
+        // Calculate statistics
+        function calculateStats() {
+            let totalRevenue = 0;
+            let expectedRevenue = 0;
+            let sold = 0;
+            let reserved = 0;
+            let available = 0;
+            let totalPrices = 0;
+            let priceCount = 0;
+
+            // Skip header row
+            for (let i = 1; i < sheetData.length; i++) {
+                const row = sheetData[i];
+                const status = row[1]?.toLowerCase() || 'available';
+                const priceStr = row[2] || '0';
+                const price = parseFloat(priceStr.replace(/[₦,]/g, '')) || 0;
+
+                switch (status) {
+                    case 'sold':
+                        sold++;
+                        totalRevenue += price;
+                        break;
+                    case 'reserved':
+                        reserved++;
+                        expectedRevenue += price;
+                        break;
+                    default:
+                        available++;
+                }
+
+                if (price > 0) {
+                    totalPrices += price;
+                    priceCount++;
+                }
+            }
+
+            const totalParcels = sold + reserved + available;
+            const occupancyRate = totalParcels > 0 ? Math.round(((sold + reserved) / totalParcels) * 100) : 0;
+            const averagePrice = priceCount > 0 ? totalPrices / priceCount : 0;
+
+            return {
+                totalRevenue,
+                expectedRevenue,
+                sold,
+                reserved,
+                available,
+                totalParcels,
+                occupancyRate,
+                averagePrice
+            };
+        }
+
+        // Event handlers
+        document.getElementById('toggleNumbers').addEventListener('click', function() {
+            numbersVisible = !numbersVisible;
+            this.classList.toggle('active');
+            updateParcelsDisplay();
+        });
+
+        document.getElementById('toggleOverlay').addEventListener('click', function() {
+            overlayVisible = !overlayVisible;
+            this.classList.toggle('active');
+            updateParcelsDisplay();
+        });
+
+        document.getElementById('showAll').addEventListener('click', function() {
+            numbersVisible = true;
+            overlayVisible = true;
+            document.getElementById('toggleNumbers').classList.add('active');
+            document.getElementById('toggleOverlay').classList.add('active');
+            updateParcelsDisplay();
+        });
+
+        // Utility functions
+        function openGoogleSheets() {
+            const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/edit`;
+            window.open(url, '_blank');
+        }
+
+        function refreshData() {
+            showMessage('Refreshing estate data...', 'success');
+            loadGoogleSheetsData();
+            loadParcelsData();
+        }
+
+        function contactEstate(parcelId) {
+            const subject = `Inquiry about Parcel ${parcelId} - ${CLIENT_CONFIG.estateName}`;
+            const body = `Hello,\n\nI am interested in learning more about Parcel ${parcelId} at ${CLIENT_CONFIG.estateName}.\n\nPlease provide more details.\n\nThank you.`;
+            const mailtoLink = `mailto:${CLIENT_CONFIG.clientEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+            window.open(mailtoLink, '_blank');
+        }
+
+        function showMessage(text, type) {
+            const existingMessage = document.querySelector('.message');
+            if (existingMessage) {
+                existingMessage.remove();
+            }
+
+            const message = document.createElement('div');
+            message.className = `message ${type}`;
+            message.textContent = text;
+
+            const container = document.querySelector('.container');
+            container.insertBefore(message, container.firstChild);
+
+            setTimeout(() => {
+                message.remove();
+            }, 5000);
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            initMap();
+        });
+    </script>
+</body>
+</html>

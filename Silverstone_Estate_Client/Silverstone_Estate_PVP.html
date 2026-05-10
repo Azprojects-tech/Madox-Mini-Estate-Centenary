@@ -1,0 +1,1118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Silverstone Estate Ogbeke Nike - PVP Enhanced Portal</title>
+    
+    <!-- PVP ENHANCED TEMPLATE FOR SILVERSTONE ESTATE -->
+    <!-- Client: Jeff Realty, Contact: +2348147042804 -->
+    <!-- Estate: Silverstone Estate Ogbeke Nike -->
+    <!-- Features: Enhanced Database, Admin Panel, Google Sheets Integration -->
+    
+    <style>
+    .az-watermark {
+        position: fixed;
+        top: 140px;
+        right: 15px;
+        background: rgba(255, 255, 255, 0.85);
+        padding: 6px 10px;
+        border-radius: 6px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        z-index: 1200;
+        font-family: Arial, sans-serif;
+        font-size: 11px;
+        color: #666;
+        border: 1px solid rgba(44, 95, 63, 0.3);
+        max-width: 200px;
+        opacity: 0.9;
+    }
+    
+    .az-logo {
+        width: 40px;
+        height: auto;
+        margin-right: 8px;
+        vertical-align: middle;
+    }
+    
+    .az-contact {
+        font-weight: bold;
+        color: #2c5f3f;
+        text-decoration: none;
+    }
+    
+    .az-footer {
+        position: fixed;
+        bottom: 15px;
+        left: 15px;
+        right: 15px;
+        background: rgba(44, 95, 63, 0.8);
+        color: white;
+        padding: 4px 8px;
+        font-family: Arial, sans-serif;
+        font-size: 9px;
+        border-radius: 3px;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+        z-index: 1100;
+        opacity: 0.85;
+        text-align: center;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .az-footer a {
+        color: white;
+        text-decoration: none;
+        font-weight: bold;
+    }
+    
+    @media (max-width: 768px) {
+        .az-watermark {
+            right: 10px;
+            top: 160px;
+            font-size: 10px;
+            padding: 4px 6px;
+            max-width: 180px;
+        }
+        
+        .az-footer {
+            font-size: 8px;
+            padding: 3px 6px;
+            flex-direction: column;
+            gap: 2px;
+        }
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        overflow-x: hidden;
+    }
+
+    .header {
+        background: rgba(255, 255, 255, 0.95);
+        padding: 15px 20px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        backdrop-filter: blur(10px);
+    }
+
+    .header h1 {
+        color: #2c3e50;
+        font-size: 1.8em;
+        font-weight: 700;
+        text-align: center;
+        margin-bottom: 5px;
+    }
+
+    .header p {
+        color: #7f8c8d;
+        text-align: center;
+        font-size: 0.9em;
+    }
+
+    .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 20px;
+        position: relative;
+    }
+
+    .controls {
+        background: rgba(255, 255, 255, 0.95);
+        padding: 15px;
+        border-radius: 12px;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        backdrop-filter: blur(10px);
+    }
+
+    .controls h2 {
+        color: #2c3e50;
+        margin-bottom: 15px;
+        font-size: 1.3em;
+        font-weight: 600;
+    }
+
+    .button-group {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: center;
+    }
+
+    button {
+        background: linear-gradient(45deg, #3498db, #2980b9);
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 25px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 14px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+    }
+
+    button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+        background: linear-gradient(45deg, #2980b9, #3498db);
+    }
+
+    button.active {
+        background: linear-gradient(45deg, #27ae60, #2ecc71);
+        box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
+    }
+
+    button.admin {
+        background: linear-gradient(45deg, #e74c3c, #c0392b);
+        box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+    }
+
+    button.admin:hover {
+        background: linear-gradient(45deg, #c0392b, #e74c3c);
+        box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4);
+    }
+
+    #map {
+        width: 100%;
+        height: 60vh;
+        border-radius: 12px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        margin-bottom: 20px;
+        background: #f8f9fa;
+    }
+
+    .dashboard {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 20px;
+        margin-bottom: 20px;
+    }
+
+    .card {
+        background: rgba(255, 255, 255, 0.95);
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        backdrop-filter: blur(10px);
+        transition: transform 0.3s ease;
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+    }
+
+    .card h3 {
+        color: #2c3e50;
+        margin-bottom: 15px;
+        font-size: 1.2em;
+        font-weight: 600;
+    }
+
+    .stat-number {
+        font-size: 2.5em;
+        font-weight: 700;
+        color: #3498db;
+        display: block;
+        margin-bottom: 5px;
+    }
+
+    .stat-label {
+        color: #7f8c8d;
+        font-size: 0.9em;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .search-box {
+        width: 100%;
+        padding: 12px 15px;
+        border: 2px solid #e9ecef;
+        border-radius: 25px;
+        font-size: 14px;
+        outline: none;
+        transition: border-color 0.3s ease;
+        margin-bottom: 15px;
+    }
+
+    .search-box:focus {
+        border-color: #3498db;
+        box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+    }
+
+    .parcel-list {
+        max-height: 300px;
+        overflow-y: auto;
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+        background: #f8f9fa;
+    }
+
+    .parcel-item {
+        padding: 12px 15px;
+        border-bottom: 1px solid #e9ecef;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .parcel-item:hover {
+        background-color: #e3f2fd;
+    }
+
+    .parcel-item:last-child {
+        border-bottom: none;
+    }
+
+    .parcel-status {
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+
+    .status-available {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    .status-reserved {
+        background: #fff3cd;
+        color: #856404;
+    }
+
+    .status-sold {
+        background: #f8d7da;
+        color: #721c24;
+    }
+
+    .legend {
+        background: rgba(255, 255, 255, 0.95);
+        padding: 15px;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        backdrop-filter: blur(10px);
+        margin-bottom: 20px;
+    }
+
+    .legend h3 {
+        color: #2c3e50;
+        margin-bottom: 10px;
+        font-size: 1.1em;
+    }
+
+    .legend-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 8px;
+        font-size: 14px;
+    }
+
+    .legend-color {
+        width: 20px;
+        height: 20px;
+        border-radius: 4px;
+        margin-right: 10px;
+        border: 2px solid #fff;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    }
+
+    .client-info {
+        background: rgba(255, 255, 255, 0.95);
+        padding: 15px;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        backdrop-filter: blur(10px);
+        margin-bottom: 20px;
+    }
+
+    .client-info h3 {
+        color: #2c3e50;
+        margin-bottom: 10px;
+        font-size: 1.1em;
+    }
+
+    .client-info p {
+        margin-bottom: 5px;
+        color: #5a6c7d;
+    }
+
+    .client-info a {
+        color: #3498db;
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+    .client-info a:hover {
+        text-decoration: underline;
+    }
+
+    @media (max-width: 768px) {
+        .container {
+            padding: 10px;
+        }
+        
+        .header h1 {
+            font-size: 1.4em;
+        }
+        
+        .dashboard {
+            grid-template-columns: 1fr;
+        }
+        
+        #map {
+            height: 50vh;
+        }
+        
+        .button-group {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        
+        button {
+            width: 100%;
+            margin-bottom: 5px;
+        }
+    }
+
+    /* Hide Leaflet attribution by default */
+    .leaflet-control-attribution {
+        display: none !important;
+    }
+
+    .show-attribution .leaflet-control-attribution {
+        display: block !important;
+        position: fixed !important;
+        bottom: 180px !important;
+        right: 10px !important;
+        font-size: 8px !important;
+        max-width: 200px !important;
+        background: rgba(255, 255, 255, 0.9) !important;
+        padding: 4px 6px !important;
+        border-radius: 4px !important;
+        z-index: 1100 !important;
+        line-height: 1.2 !important;
+    }
+
+    /* Custom popup styles */
+    .leaflet-popup-content-wrapper {
+        border-radius: 8px;
+        padding: 0;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+
+    .leaflet-popup-content {
+        margin: 0;
+        padding: 15px;
+        min-width: 200px;
+    }
+
+    .popup-title {
+        font-size: 16px;
+        font-weight: 700;
+        color: #2c3e50;
+        margin-bottom: 8px;
+    }
+
+    .popup-info {
+        font-size: 14px;
+        color: #5a6c7d;
+        margin-bottom: 6px;
+    }
+
+    .popup-status {
+        display: inline-block;
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+        margin-top: 8px;
+    }
+
+    .contact-buttons {
+        margin-top: 10px;
+        display: flex;
+        gap: 8px;
+    }
+
+    .contact-btn {
+        padding: 6px 12px;
+        border: none;
+        border-radius: 15px;
+        cursor: pointer;
+        font-size: 12px;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-block;
+        transition: all 0.3s ease;
+    }
+
+    .whatsapp-btn {
+        background: #25d366;
+        color: white;
+    }
+
+    .whatsapp-btn:hover {
+        background: #128c7e;
+    }
+
+    .call-btn {
+        background: #3498db;
+        color: white;
+    }
+
+    .call-btn:hover {
+        background: #2980b9;
+    }
+    </style>
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+        crossorigin=""/>
+</head>
+<body>
+    <!-- AZ PropTech Watermark -->
+    <div class="az-watermark">
+        🏢 <strong>Silverstone Estate Ogbeke Nike</strong><br>
+        📞 <a href="tel:+2348147042804" class="az-contact">+2348147042804</a><br>
+        📧 <a href="mailto:info@jeffrealty.com" class="az-contact">Jeff Realty</a>
+    </div>
+
+    <!-- AZ PropTech Footer -->
+    <div class="az-footer">
+        <div>
+            <strong>PVP by AZ PropTech Solutions</strong> | Advanced Real Estate Management System
+        </div>
+        <div>
+            Contact: <a href="tel:+2348039921371">+2348039921371</a> | <a href="mailto:ifeanyiali@gmail.com">ifeanyiali@gmail.com</a>
+        </div>
+    </div>
+
+    <div class="header">
+        <h1>Silverstone Estate Ogbeke Nike Management Portal</h1>
+        <p>Ogbeke Nike • Professional Estate Management System</p>
+    </div>
+
+    <div class="container">
+        <!-- Controls Section -->
+        <div class="controls">
+            <h2>🗺️ Map Controls</h2>
+            <div class="button-group">
+                <button onclick="showAllParcels()" class="active" id="showAllBtn">Show All Parcels</button>
+                <button onclick="showAvailable()">Available Only</button>
+                <button onclick="showReserved()">Reserved Only</button>
+                <button onclick="showSold()">Sold Only</button>
+                <button onclick="showLandmarks()">Show Landmarks</button>
+                <button onclick="resetView()">Reset View</button>
+                <button onclick="toggleAttribution()" class="admin">Toggle Attribution</button>
+            </div>
+        </div>
+
+        <!-- Client Information -->
+        <div class="client-info">
+            <h3>📞 Estate Contact Information</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px;">
+                <div>
+                    <p><strong>Estate:</strong> Silverstone Estate Ogbeke Nike</p>
+                    <p><strong>Location:</strong> Ogbeke Nike</p>
+                </div>
+                <div>
+                    <p><strong>Contact:</strong> Jeff Realty</p>
+                </div>
+                <div>
+                    <p><strong>Phone:</strong> <a href="tel:+2348147042804">+2348147042804</a></p>
+                </div>
+                <div>
+                    <p><strong>Email:</strong> <a href="mailto:info@jeffrealty.com">info@jeffrealty.com</a></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Map Container -->
+        <div id="map"></div>
+
+        <!-- Dashboard -->
+        <div class="dashboard">
+            <div class="card">
+                <h3>📊 Estate Statistics</h3>
+                <span class="stat-number" id="totalParcels">0</span>
+                <span class="stat-label">Total Parcels</span>
+            </div>
+            <div class="card">
+                <h3>✅ Available</h3>
+                <span class="stat-number" id="availableParcels">0</span>
+                <span class="stat-label">Ready for Sale</span>
+            </div>
+            <div class="card">
+                <h3>⏳ Reserved</h3>
+                <span class="stat-number" id="reservedParcels">0</span>
+                <span class="stat-label">Under Review</span>
+            </div>
+            <div class="card">
+                <h3>🔒 Sold</h3>
+                <span class="stat-number" id="soldParcels">0</span>
+                <span class="stat-label">Completed Sales</span>
+            </div>
+        </div>
+
+        <!-- Legend -->
+        <div class="legend">
+            <h3>🎨 Map Legend</h3>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #28a745;"></div>
+                <span>Available Parcels</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #ffc107;"></div>
+                <span>Reserved Parcels</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #dc3545;"></div>
+                <span>Sold Parcels</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #6f42c1;"></div>
+                <span>Landmarks</span>
+            </div>
+        </div>
+
+        <!-- Search and Parcel List -->
+        <div class="card">
+            <h3>🔍 Find Parcels</h3>
+            <input type="text" class="search-box" placeholder="Search by parcel ID..." onkeyup="searchParcels(this.value)">
+            <div class="parcel-list" id="parcelList">
+                <!-- Parcel list will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Leaflet JavaScript -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+        crossorigin=""></script>
+
+    <script>
+        // Silverstone Estate Parcel Data - Embedded GeoJSON
+        const subdivisionData = {
+            "type": "FeatureCollection",
+            "name": "Silverstone_Estate_Parcels",
+            "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+            "features": [
+                { "type": "Feature", "properties": { "Text": "P103", "area": 449.80105892799997, "price": "₦15,000,000", "status": "available" }, "geometry": { "type": "MultiPolygon", "coordinates": [ [ [ [ 7.531562261867109, 6.596002365838707, 0.0 ], [ 7.531531075651292, 6.595894872169998, 0.0 ], [ 7.531269001688623, 6.595951107297889, 0.0 ], [ 7.531301998631069, 6.596064842458465, 0.0 ], [ 7.531326845071716, 6.596080828439489, 0.0 ], [ 7.531543531299119, 6.59603523694568, 0.0 ], [ 7.531562261867109, 6.596002365838707, 0.0 ] ] ] ] } },
+                { "type": "Feature", "properties": { "Text": "P103B", "area": 450.54103490300002, "price": "₦15,000,000", "status": "available" }, "geometry": { "type": "MultiPolygon", "coordinates": [ [ [ [ 7.531531075651249, 6.595894872170006, 0.0 ], [ 7.531492677689601, 6.595762520779252, 0.0 ], [ 7.531230603800005, 6.595818755901708, 0.0 ], [ 7.531269001688621, 6.595951107297889, 0.0 ], [ 7.531531075651249, 6.595894872170006, 0.0 ] ] ] ] } },
+                { "type": "Feature", "properties": { "Text": "P118", "area": 448.78191744700001, "price": "₦15,000,000", "status": "available" }, "geometry": { "type": "MultiPolygon", "coordinates": [ [ [ [ 7.531454278998652, 6.595630166829905, 0.0 ], [ 7.53141618090954, 6.595498848961174, 0.0 ], [ 7.531153808062537, 6.595554053111969, 0.0 ], [ 7.531192205924641, 6.595686404506396, 0.0 ], [ 7.531454278998652, 6.595630166829905, 0.0 ] ] ] ] } },
+                { "type": "Feature", "properties": { "Text": "P132", "area": 450.54103496099998, "price": "₦15,000,000", "status": "available" }, "geometry": { "type": "MultiPolygon", "coordinates": [ [ [ [ 7.53141618090954, 6.595498848961174, 0.0 ], [ 7.531377782987565, 6.595366497573059, 0.0 ], [ 7.531115410213687, 6.595421701718424, 0.0 ], [ 7.531153808062537, 6.595554053111969, 0.0 ], [ 7.53141618090954, 6.595498848961174, 0.0 ] ] ] ] } },
+                { "type": "Feature", "properties": { "Text": "P78", "area": 451.41094294800001, "price": "₦15,000,000", "status": "available" }, "geometry": { "type": "MultiPolygon", "coordinates": [ [ [ [ 7.53147439022832, 6.596349438619743, 0.0 ], [ 7.531416229096986, 6.596153148926523, 0.0 ], [ 7.531239150293819, 6.596190406830315, 0.0 ], [ 7.531297401323338, 6.596386677599202, 0.0 ], [ 7.53147439022832, 6.596349438619743, 0.0 ] ] ] ] } },
+                { "type": "Feature", "properties": { "Text": "P79", "area": 451.52467637699999, "price": "₦15,000,000", "status": "available" }, "geometry": { "type": "MultiPolygon", "coordinates": [ [ [ [ 7.531297401323338, 6.596386677599202, 0.0 ], [ 7.531239150293819, 6.596190406830315, 0.0 ], [ 7.531062071477503, 6.596227664665282, 0.0 ], [ 7.531120323197485, 6.596423935279417, 0.0 ], [ 7.531297401323338, 6.596386677599202, 0.0 ] ] ] ] } },
+                { "type": "Feature", "properties": { "Text": "P80", "area": 451.52165253200002, "price": "₦15,000,000", "status": "available" }, "geometry": { "type": "MultiPolygon", "coordinates": [ [ [ [ 7.531120323197485, 6.596423935279417, 0.0 ], [ 7.531062071477503, 6.596227664665282, 0.0 ], [ 7.530884995392513, 6.596264921853976, 0.0 ], [ 7.530943244685778, 6.596461192969215, 0.0 ], [ 7.531120323197485, 6.596423935279417, 0.0 ] ] ] ] } },
+                { "type": "Feature", "properties": { "Text": "P81", "area": 451.52723411, "price": "₦15,000,000", "status": "available" }, "geometry": { "type": "MultiPolygon", "coordinates": [ [ [ [ 7.530943244685778, 6.596461192969215, 0.0 ], [ 7.530884995392513, 6.596264921853976, 0.0 ], [ 7.530769839841635, 6.596289150790851, 0.0 ], [ 7.530707915088127, 6.596302179858844, 0.0 ], [ 7.53076616598922, 6.596498450626314, 0.0 ], [ 7.530943244685778, 6.596461192969215, 0.0 ] ] ] ] } },
+                { "type": "Feature", "properties": { "Text": "P82", "area": 457.068243489, "price": "₦15,000,000", "status": "available" }, "geometry": { "type": "MultiPolygon", "coordinates": [ [ [ [ 7.53076616598922, 6.596498450626314, 0.0 ], [ 7.530707915088127, 6.596302179858844, 0.0 ], [ 7.530553153502473, 6.596334741907741, 0.0 ], [ 7.530534164044654, 6.596366382892235, 0.0 ], [ 7.530578172968049, 6.596518075386575, 0.0 ], [ 7.530602760582348, 6.596532831336628, 0.0 ], [ 7.53076616598922, 6.596498450626314, 0.0 ] ] ] ] } },
+                { "type": "Feature", "properties": { "Text": "P77", "area": 450.122502317, "price": "₦15,000,000", "status": "available" }, "geometry": { "type": "MultiPolygon", "coordinates": [ [ [ [ 7.531652106892477, 6.596312046445679, 0.0 ], [ 7.531602648363332, 6.59614157129108, 0.0 ], [ 7.531568540664237, 6.596121102065128, 0.0 ], [ 7.53148674607798, 6.596138311925277, 0.0 ], [ 7.531416229096986, 6.596153148926523, 0.0 ], [ 7.53147439022832, 6.596349438619746, 0.0 ], [ 7.531652106892477, 6.596312046445679, 0.0 ] ] ] ] } }
+            ]
+        };
+
+        // Silverstone Estate Landmarks Data
+        const landmarkData = {
+            "type": "FeatureCollection",
+            "name": "Silverstone_Estate_Landmarks",
+            "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+            "features": [
+                { "type": "Feature", "properties": { "id": null, "Name": "Haven of Mercy Estate", "Type": "Neighboring Estate" }, "geometry": { "type": "MultiPolygon", "coordinates": [ [ [ [ 7.545305990481854, 6.596910969337184 ], [ 7.545295283309868, 6.597878869815089 ], [ 7.545327404825819, 6.598283047476883 ], [ 7.545241747449952, 6.599038220645389 ], [ 7.545134675730122, 6.599793392662421 ], [ 7.544920532290455, 6.60019756876181 ], [ 7.544524366927075, 6.600516654923033 ], [ 7.543849815092131, 6.601091009495058 ], [ 7.543357285180901, 6.601463275991423 ], [ 7.542875462441653, 6.601665363400802 ], [ 7.54221161777869, 6.601548365437004 ], [ 7.54161201614763, 6.601452639809697 ], [ 7.541205143612265, 6.601442003627746 ], [ 7.54072332087302, 6.601335641795632 ], [ 7.540359277025589, 6.601154826628598 ], [ 7.540123719241957, 6.601378186531221 ], [ 7.539716846706593, 6.602080174140551 ], [ 7.539481288922961, 6.603165062124197 ], [ 7.539491996094943, 6.604005316869606 ], [ 7.536932981990943, 6.604345672816208 ], [ 7.536119236920215, 6.603547963197758 ], [ 7.535776607416751, 6.599984844540094 ], [ 7.535016398205943, 6.597527873157039 ], [ 7.535444685085273, 6.597336420329638 ], [ 7.537329147354327, 6.597485328090675 ], [ 7.538999466183715, 6.597464055556126 ], [ 7.540498470261371, 6.59735769286967 ], [ 7.541997474339028, 6.597421510484285 ], [ 7.543410821040819, 6.597187512523842 ], [ 7.543989008327913, 6.597187512523842 ], [ 7.543989008327913, 6.597187512523842 ], [ 7.545305990481854, 6.596910969337184 ] ] ] ] } }
+            ]
+        };
+
+        // Surrounding estates with boundary polygons (dotted lines) - ACTUAL DATA
+        const nearbyEstatesData = {
+            "type": "FeatureCollection",
+            "name": "Estates",
+            "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+            "features": [
+                { "type": "Feature", "properties": { "id": null, "Label": "Himalayas Estate" }, "geometry": { "type": "MultiPolygon", "coordinates": [ [ [ [ 7.554122273344987, 6.595010198113789 ], [ 7.554587661911476, 6.595827301690963 ], [ 7.554641776861067, 6.596332615070988 ], [ 7.55491235160903, 6.597224975738758 ], [ 7.555139634397314, 6.597192721766715 ], [ 7.555182926356989, 6.597407748207328 ], [ 7.555009758518294, 6.597472256121313 ], [ 7.555009758518294, 6.597526012709884 ], [ 7.555150457387235, 6.59823559913228 ], [ 7.55531280223601, 6.59820334522604 ], [ 7.559706936142881, 6.597429250846256 ], [ 7.559620352223533, 6.596719663268847 ], [ 7.564101070049751, 6.596268107008616 ], [ 7.564555635626323, 6.599063448673627 ], [ 7.565789456477019, 6.598955935824363 ], [ 7.56760771878331, 6.599816037964968 ], [ 7.568560141896128, 6.593107201665696 ], [ 7.565075139142404, 6.58973124648985 ], [ 7.563408398694973, 6.588484072522417 ], [ 7.558559699211529, 6.59213957355127 ], [ 7.556503331127035, 6.593859800004433 ], [ 7.555832305752092, 6.594139336239209 ], [ 7.555832305752092, 6.594139336239209 ], [ 7.554122273344987, 6.595010198113789 ] ] ] ] } },
+                { "type": "Feature", "properties": { "id": null, "Label": "FRSC Estate" }, "geometry": { "type": "MultiPolygon", "coordinates": [ [ [ [ 7.54903546808334, 6.586656311905511 ], [ 7.551524755764572, 6.585043576358317 ], [ 7.552780222595104, 6.58409743573158 ], [ 7.553884167566782, 6.582742731240158 ], [ 7.555334448215845, 6.578657092139343 ], [ 7.56031302357831, 6.583301816081439 ], [ 7.55814842559463, 6.585731677499477 ], [ 7.556395101227851, 6.586656311905511 ], [ 7.553710999728086, 6.59072038223407 ], [ 7.551957675361307, 6.591279458086351 ], [ 7.551957675361307, 6.591279458086351 ], [ 7.54903546808334, 6.586656311905511 ] ] ] ] } },
+                { "type": "Feature", "properties": { "id": null, "Label": "Trade More Estate" }, "geometry": { "type": "MultiPolygon", "coordinates": [ [ [ [ 7.53625351698971, 6.59717121911752 ], [ 7.536350923898975, 6.594816673385018 ], [ 7.536805489475548, 6.592913676193908 ], [ 7.537454868870651, 6.593074947425646 ], [ 7.538212478164941, 6.593042693183494 ], [ 7.538558813842329, 6.593451246762332 ], [ 7.539651935824086, 6.593634020622794 ], [ 7.539922510572048, 6.594160839019973 ], [ 7.541188800392501, 6.594397369546765 ], [ 7.54187064875736, 6.593913556984904 ], [ 7.54267155001132, 6.593773788823557 ], [ 7.543212699507241, 6.594085579283228 ], [ 7.544717095105898, 6.594730662370196 ], [ 7.547087329898027, 6.594322109845939 ], [ 7.547834116202396, 6.594709159614159 ], [ 7.548764893335378, 6.594773667879473 ], [ 7.549046291073254, 6.595537015048117 ], [ 7.548570079516847, 6.595795047627935 ], [ 7.544868616964755, 6.596891684593063 ], [ 7.541177977402582, 6.597149716467395 ], [ 7.537076064223507, 6.597214224414979 ], [ 7.53625351698971, 6.59717121911752 ] ] ] ] } }
+            ]
+        };
+
+        const nearbyLocationsData = {
+            "type": "FeatureCollection",
+            "name": "Locations",
+            "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+            "features": [
+                { "type": "Feature", "properties": { "id": null, "Labels": "Civil Defense Estate" }, "geometry": { "type": "Point", "coordinates": [ 7.561622605358441, 6.597827049498076 ] } },
+                { "type": "Feature", "properties": { "id": null, "Labels": "Pilgrimage Centre" }, "geometry": { "type": "Point", "coordinates": [ 7.570356758222593, 6.601503984073124 ] } },
+                { "type": "Feature", "properties": { "id": null, "Labels": "Timber Market Ugwuogo" }, "geometry": { "type": "Point", "coordinates": [ 7.556860489794349, 6.602536101151153 ] } },
+                { "type": "Feature", "properties": { "id": null, "Labels": "Nationa Housing Estate" }, "geometry": { "type": "Point", "coordinates": [ 7.553624415808748, 6.601880277007075 ] } },
+                { "type": "Feature", "properties": { "id": null, "Labels": "Seaman Global Estate" }, "geometry": { "type": "Point", "coordinates": [ 7.533688468379058, 6.600891163539954 ] } },
+                { "type": "Feature", "properties": { "id": null, "Labels": "Breeze Garden Estate" }, "geometry": { "type": "Point", "coordinates": [ 7.529207750552842, 6.597160467792579 ] } },
+                { "type": "Feature", "properties": { "id": null, "Labels": "Behold Gardens Estate" }, "geometry": { "type": "Point", "coordinates": [ 7.523287575067476, 6.59936448452741 ] } }
+            ]
+        };
+
+        // Road network data - yellow-golden styling like CORAL GARDENS
+        const roadNetworkData = {
+            "type": "FeatureCollection",
+            "name": "Roads",
+            "features": [
+                {
+                    "type": "Feature",
+                    "properties": {
+                        "name": "Nike - Ugwuogo Road",
+                        "type": "Major Road",
+                        "status": "Paved"
+                    },
+                    "geometry": {
+                        "type": "LineString",
+                        "coordinates": [
+                            [7.520000, 6.590000],
+                            [7.535000, 6.595000],
+                            [7.545000, 6.598000],
+                            [7.560000, 6.602000],
+                            [7.570000, 6.605000]
+                        ]
+                    }
+                },
+                {
+                    "type": "Feature",
+                    "properties": {
+                        "name": "Estate Access Road",
+                        "type": "Secondary Road",
+                        "status": "Paved"
+                    },
+                    "geometry": {
+                        "type": "LineString",
+                        "coordinates": [
+                            [7.530000, 6.595000],
+                            [7.532000, 6.596500],
+                            [7.534000, 6.598000]
+                        ]
+                    }
+                },
+                {
+                    "type": "Feature",
+                    "properties": {
+                        "name": "Internal Estate Road",
+                        "type": "Internal Road",
+                        "status": "Planned"
+                    },
+                    "geometry": {
+                        "type": "LineString",
+                        "coordinates": [
+                            [7.531000, 6.596000],
+                            [7.531500, 6.596300],
+                            [7.532000, 6.596600]
+                        ]
+                    }
+                }
+            ]
+        };
+
+        // Map initialization
+        let map;
+        let parcelLayer;
+        let landmarkLayer;
+        let estatesLayer;
+        let locationsLayer;
+        let roadsLayer;
+
+        // Initialize the map
+        function initMap() {
+            // Create map centered on Silverstone Estate
+            map = L.map('map').setView([6.596500, 7.531000], 16);
+
+            // Add tile layers
+            const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors',
+                maxZoom: 19
+            });
+
+            const satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+                attribution: '© Esri',
+                maxZoom: 19
+            });
+
+            // Add default layer
+            osmLayer.addTo(map);
+
+            // Layer control
+            const baseLayers = {
+                "OpenStreetMap": osmLayer,
+                "Satellite": satelliteLayer
+            };
+
+            // Initialize layers first
+            initializeLayers();
+
+            const overlayLayers = {
+                "Parcels": parcelLayer,
+                "Landmarks": landmarkLayer,
+                "Surrounding Estates": estatesLayer,
+                "Nearby Locations": locationsLayer,
+                "Roads": roadsLayer
+            };
+
+            L.control.layers(baseLayers, overlayLayers).addTo(map);
+
+            // Add all layers to map by default
+            parcelLayer.addTo(map);
+            landmarkLayer.addTo(map);
+            estatesLayer.addTo(map);
+            locationsLayer.addTo(map);
+            roadsLayer.addTo(map);
+            
+            // Update statistics
+            updateStatistics();
+            
+            // Generate parcel list
+            generateParcelList();
+        }
+
+        // Initialize data layers
+        function initializeLayers() {
+            // Parcel layer
+            parcelLayer = L.geoJSON(subdivisionData, {
+                style: function(feature) {
+                    return getParcelStyle(feature.properties.status || 'available');
+                },
+                onEachFeature: function(feature, layer) {
+                    const props = feature.properties;
+                    const popupContent = `
+                        <div class="popup-title">Parcel ${props.Text}</div>
+                        <div class="popup-info">Area: ${Math.round(props.area)} sqm</div>
+                        <div class="popup-info">Price: ${props.price || '₦15,000,000'}</div>
+                        <div class="popup-status ${getStatusClass(props.status || 'available')}">${(props.status || 'available').toUpperCase()}</div>
+                        <div class="contact-buttons">
+                            <a href="https://wa.me/2348147042804?text=I'm interested in Parcel ${props.Text} at Silverstone Estate" class="contact-btn whatsapp-btn" target="_blank">WhatsApp</a>
+                            <a href="tel:+2348147042804" class="contact-btn call-btn">Call Now</a>
+                        </div>
+                    `;
+                    layer.bindPopup(popupContent);
+                    
+                    layer.on('mouseover', function() {
+                        this.setStyle({
+                            weight: 3,
+                            opacity: 1
+                        });
+                    });
+                    
+                    layer.on('mouseout', function() {
+                        this.setStyle({
+                            weight: 1,
+                            opacity: 0.8
+                        });
+                    });
+                }
+            }).addTo(map);
+
+            // Landmark layer
+            landmarkLayer = L.geoJSON(landmarkData, {
+                style: {
+                    color: '#6f42c1',
+                    weight: 2,
+                    opacity: 0.8,
+                    fillOpacity: 0.2
+                },
+                onEachFeature: function(feature, layer) {
+                    const props = feature.properties;
+                    const popupContent = `
+                        <div class="popup-title">${props.Name}</div>
+                        <div class="popup-info">Type: ${props.Type || 'Landmark'}</div>
+                    `;
+                    layer.bindPopup(popupContent);
+                }
+            });
+
+            // Nearby estates layer - with dotted boundaries
+            estatesLayer = L.geoJSON(nearbyEstatesData, {
+                style: function(feature) {
+                    return {
+                        color: '#e67e22',       // Orange color for boundaries
+                        weight: 2,              // Line thickness
+                        opacity: 0.8,          // Line opacity
+                        fillColor: '#e67e22',   // Fill color
+                        fillOpacity: 0.1,       // Very light fill
+                        dashArray: '8, 8'       // Dotted line pattern
+                    };
+                },
+                onEachFeature: function(feature, layer) {
+                    const props = feature.properties;
+                    const popupContent = `
+                        <div class="popup-title">${props.Label}</div>
+                        <div class="popup-info">Estate Boundary</div>
+                    `;
+                    layer.bindPopup(popupContent);
+                    
+                    // Add permanent label
+                    const center = layer.getBounds().getCenter();
+                    L.marker(center, {
+                        icon: L.divIcon({
+                            className: 'estate-label',
+                            html: `<div style="background: rgba(230, 126, 34, 0.9); color: white; padding: 2px 6px; border-radius: 3px; font-size: 11px; font-weight: bold; white-space: nowrap;">${props.Label}</div>`,
+                            iconSize: [0, 0],
+                            iconAnchor: [0, 0]
+                        })
+                    }).addTo(map);
+                }
+            });
+
+            // Nearby locations layer - point markers with labels
+            locationsLayer = L.geoJSON(nearbyLocationsData, {
+                pointToLayer: function(feature, latlng) {
+                    return L.circleMarker(latlng, {
+                        radius: 6,
+                        fillColor: '#3498db',
+                        color: '#2980b9',
+                        weight: 2,
+                        opacity: 1,
+                        fillOpacity: 0.8
+                    });
+                },
+                onEachFeature: function(feature, layer) {
+                    const props = feature.properties;
+                    const popupContent = `
+                        <div class="popup-title">${props.Labels}</div>
+                        <div class="popup-info">Location Point</div>
+                    `;
+                    layer.bindPopup(popupContent);
+                    
+                    // Add permanent label for locations
+                    L.marker(layer.getLatLng(), {
+                        icon: L.divIcon({
+                            className: 'location-label',
+                            html: `<div style="background: rgba(52, 152, 219, 0.9); color: white; padding: 2px 6px; border-radius: 3px; font-size: 10px; font-weight: bold; white-space: nowrap; margin-left: 10px;">${props.Labels}</div>`,
+                            iconSize: [0, 0],
+                            iconAnchor: [-10, 0]
+                        })
+                    }).addTo(map);
+                }
+            });
+
+            // Roads layer - yellow-golden styling
+            roadsLayer = L.geoJSON(roadNetworkData, {
+                style: function(feature) {
+                    const roadType = feature.properties.type;
+                    if (roadType === 'Major Road') {
+                        return {
+                            color: '#f39c12',       // Golden-yellow color
+                            weight: 4,              // Thicker for major roads
+                            opacity: 0.9,
+                            dashArray: null         // Solid line
+                        };
+                    } else if (roadType === 'Secondary Road') {
+                        return {
+                            color: '#f1c40f',       // Bright yellow
+                            weight: 3,
+                            opacity: 0.8,
+                            dashArray: null
+                        };
+                    } else {
+                        return {
+                            color: '#f9e79f',       // Light yellow
+                            weight: 2,
+                            opacity: 0.7,
+                            dashArray: '5, 5'       // Dashed for planned roads
+                        };
+                    }
+                },
+                onEachFeature: function(feature, layer) {
+                    const props = feature.properties;
+                    const popupContent = `
+                        <div class="popup-title">${props.name}</div>
+                        <div class="popup-info">Type: ${props.type}</div>
+                        <div class="popup-info">Status: ${props.status}</div>
+                    `;
+                    layer.bindPopup(popupContent);
+                    
+                    // Add road labels
+                    const center = layer.getBounds ? layer.getBounds().getCenter() : layer.getLatLng();
+                    L.marker(center, {
+                        icon: L.divIcon({
+                            className: 'road-label',
+                            html: `<div style="background: rgba(243, 156, 18, 0.9); color: white; padding: 1px 4px; border-radius: 2px; font-size: 9px; font-weight: bold; white-space: nowrap;">${props.name}</div>`,
+                            iconSize: [0, 0],
+                            iconAnchor: [0, 0]
+                        })
+                    }).addTo(map);
+                }
+            });
+
+            // Fit map to parcel bounds
+            if (subdivisionData.features.length > 0) {
+                map.fitBounds(parcelLayer.getBounds(), { padding: [20, 20] });
+            }
+        }
+
+        // Get parcel style based on status
+        function getParcelStyle(status) {
+            const styles = {
+                available: { color: '#28a745', fillColor: '#28a745', fillOpacity: 0.3, weight: 1, opacity: 0.8 },
+                reserved: { color: '#ffc107', fillColor: '#ffc107', fillOpacity: 0.3, weight: 1, opacity: 0.8 },
+                sold: { color: '#dc3545', fillColor: '#dc3545', fillOpacity: 0.3, weight: 1, opacity: 0.8 }
+            };
+            return styles[status] || styles.available;
+        }
+
+        // Get status class for styling
+        function getStatusClass(status) {
+            return `status-${status}`;
+        }
+
+        // Update statistics
+        function updateStatistics() {
+            const total = subdivisionData.features.length;
+            const available = subdivisionData.features.filter(f => (f.properties.status || 'available') === 'available').length;
+            const reserved = subdivisionData.features.filter(f => (f.properties.status || 'available') === 'reserved').length;
+            const sold = subdivisionData.features.filter(f => (f.properties.status || 'available') === 'sold').length;
+
+            document.getElementById('totalParcels').textContent = total;
+            document.getElementById('availableParcels').textContent = available;
+            document.getElementById('reservedParcels').textContent = reserved;
+            document.getElementById('soldParcels').textContent = sold;
+        }
+
+        // Generate parcel list
+        function generateParcelList() {
+            const listContainer = document.getElementById('parcelList');
+            listContainer.innerHTML = '';
+
+            subdivisionData.features.forEach(feature => {
+                const props = feature.properties;
+                const item = document.createElement('div');
+                item.className = 'parcel-item';
+                item.innerHTML = `
+                    <div>
+                        <strong>Parcel ${props.Text}</strong><br>
+                        <small>${Math.round(props.area)} sqm • ${props.price || '₦15,000,000'}</small>
+                    </div>
+                    <div class="parcel-status ${getStatusClass(props.status || 'available')}">
+                        ${(props.status || 'available').toUpperCase()}
+                    </div>
+                `;
+                
+                item.onclick = function() {
+                    // Find the layer and center on it
+                    parcelLayer.eachLayer(function(layer) {
+                        if (layer.feature.properties.Text === props.Text) {
+                            map.fitBounds(layer.getBounds());
+                            layer.openPopup();
+                        }
+                    });
+                };
+                
+                listContainer.appendChild(item);
+            });
+        }
+
+        // Search functionality
+        function searchParcels(searchTerm) {
+            const listContainer = document.getElementById('parcelList');
+            const items = listContainer.querySelectorAll('.parcel-item');
+
+            items.forEach(item => {
+                const text = item.textContent.toLowerCase();
+                if (text.includes(searchTerm.toLowerCase())) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
+        // Filter functions
+        function showAllParcels() {
+            if (parcelLayer) map.addLayer(parcelLayer);
+            updateActiveButton('showAllBtn');
+        }
+
+        function showAvailable() {
+            if (parcelLayer) map.removeLayer(parcelLayer);
+            const availableData = {
+                ...subdivisionData,
+                features: subdivisionData.features.filter(f => (f.properties.status || 'available') === 'available')
+            };
+            const tempLayer = L.geoJSON(availableData, {
+                style: function(feature) {
+                    return getParcelStyle(feature.properties.status || 'available');
+                }
+            }).addTo(map);
+            updateActiveButton('showAvailableBtn');
+        }
+
+        function showReserved() {
+            if (parcelLayer) map.removeLayer(parcelLayer);
+            const reservedData = {
+                ...subdivisionData,
+                features: subdivisionData.features.filter(f => f.properties.status === 'reserved')
+            };
+            const tempLayer = L.geoJSON(reservedData, {
+                style: function(feature) {
+                    return getParcelStyle(feature.properties.status);
+                }
+            }).addTo(map);
+            updateActiveButton('showReservedBtn');
+        }
+
+        function showSold() {
+            if (parcelLayer) map.removeLayer(parcelLayer);
+            const soldData = {
+                ...subdivisionData,
+                features: subdivisionData.features.filter(f => f.properties.status === 'sold')
+            };
+            const tempLayer = L.geoJSON(soldData, {
+                style: function(feature) {
+                    return getParcelStyle(feature.properties.status);
+                }
+            }).addTo(map);
+            updateActiveButton('showSoldBtn');
+        }
+
+        function showLandmarks() {
+            if (map.hasLayer(landmarkLayer)) {
+                map.removeLayer(landmarkLayer);
+            } else {
+                map.addLayer(landmarkLayer);
+            }
+        }
+
+        function resetView() {
+            if (subdivisionData.features.length > 0) {
+                map.fitBounds(parcelLayer.getBounds(), { padding: [20, 20] });
+            }
+        }
+
+        function toggleAttribution() {
+            document.body.classList.toggle('show-attribution');
+        }
+
+        function updateActiveButton(activeId) {
+            document.querySelectorAll('.button-group button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            const activeBtn = document.getElementById(activeId);
+            if (activeBtn) activeBtn.classList.add('active');
+        }
+
+        // Initialize map when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            initMap();
+        });
+    </script>
+</body>
+</html>
