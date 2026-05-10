@@ -186,6 +186,51 @@
         font-size: 14px;
     }
     
+    .welcome-modal {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: white;
+        padding: 40px;
+        border-radius: 15px;
+        box-shadow: 0 10px 50px rgba(0,0,0,0.3);
+        z-index: 3500;
+        text-align: center;
+        max-width: 500px;
+        width: 90%;
+        animation: fadeInScale 0.4s ease-out;
+    }
+    
+    @keyframes fadeInScale {
+        from {
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(0.9);
+        }
+        to {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+    }
+    
+    .welcome-modal h2 {
+        font-size: 28px;
+        font-weight: 700;
+        color: #2c3e50;
+        margin: 0 0 12px 0;
+        letter-spacing: 0.5px;
+    }
+    
+    .welcome-modal p {
+        font-size: 14px;
+        font-weight: 600;
+        font-style: italic;
+        color: #555;
+        margin: 0;
+        line-height: 1.5;
+    }
+    
     .client-only {
         display: none;
     }
@@ -1138,6 +1183,11 @@
     <!-- Sync Status Indicator -->
     <div class="sync-status" id="syncStatus">📊 Syncing with Google Sheets...</div>
     
+    <!-- Welcome Modal -->
+    <div class="welcome-modal" id="welcomeModal">
+        <h2>WELCOME TO MADOX MINI ESTATE</h2>
+        <p>Click each plot to see the details</p>
+    </div>
 
     
     <!-- Client Login Modal -->
@@ -4288,6 +4338,15 @@ P003        | reserved  | 2025-08-27</pre>
             initializeParcelStatus();
             initMap();
             initLandscapeMode();
+            
+            // Show welcome modal for 5 seconds
+            const welcomeModal = document.getElementById('welcomeModal');
+            if (welcomeModal) {
+                welcomeModal.style.display = 'flex';
+                setTimeout(() => {
+                    welcomeModal.style.display = 'none';
+                }, 5000);
+            }
             
             // Initialize search input size
             const searchInput = document.getElementById('parcelSearch');
